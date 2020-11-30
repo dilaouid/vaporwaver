@@ -1,0 +1,36 @@
+body{
+    background: url('../img/bg.jpg') top / auto;
+}
+h1{
+    opacity: 0.22;
+}
+img{
+    width: 600px;
+    height: 600px;
+    border-radius: 78px;
+    border: 9px solid rgb(176,24,170);
+}
+.row{
+    font-family: Aldrich, sans-serif;
+    margin-top: 46px;
+}
+.columnBox{
+    background: rgba(18,7,85,0.58);
+    border-radius: 40px;
+    border-style: solid;
+    border-color: rgb(160,30,181);
+    font-family: Audiowide, cursive;
+    margin-right: 21px;
+}
+.processBtn{
+    margin-top: 32px;
+}
+.tipsImport{
+    opacity: 0.70;
+}
+.errorMsg{
+    opacity: 0.79;
+}
+#importFileStyleBtn{
+    filter: saturate(66%);
+}

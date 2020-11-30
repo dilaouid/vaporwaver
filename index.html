@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>vaporwaver v.01</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.2/cyborg/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+    <h1>vaporwaver v.01</h1>
+    <div class="row no-gutters justify-content-center">
+        <div class="col-auto col-md-11 col-lg-8 col-xl-5 text-center columnBox" style="padding: 25px;">
+            <img class="img-fluid" id="preview" src="assets/img/preview.gif" loading="lazy">
+        </div>
+        <div class="col-auto col-md-11 col-lg-8 col-xl-5 text-warning columnBox" style="padding: 25px;">
+            <form id="form" enctype="multipart/form-data" method="post" action="src/process.php">
+                <div class="form-group text-center">
+                    <button class="btn btn-info btn-block btn-lg" data-bs-hover-animate="pulse" id="importFileStyleBtn" type="button">Import file</button>
+                    <input class="d-none" type="file" id="importFile" accept="image/*" required>
+                    <input class="d-none" type="text" name="img" id="img">
+                </div>
+                <div class="form-group text-center d-none" id="filenameGrp">
+                    <label><strong id="filename">Filename</strong></label>
+                </div>
+                <div class="form-group">
+                    <label for="text">Text</label>
+                    <input class="form-control" type="text" name="text" placeholder="Enter the text here" required>
+                </div>
+                <div class="form-group">
+                    <label for="font">Font size</label>
+                    <input class="form-control" type="number" required value="12" name="font" min="10" max="100" step="1" placeholder="Default: 12">
+                </div>
+                <div class="form-group">
+
+                    <label for="color">Text color (in hexadecimal)</label>
+                    <input class="form-control" type="text" name="color" placeholder="#fffff" id="color" required>
+                </div>
+                <div class="form-group">
+                    <label for="position">Text position</label>
+                    <select class="custom-select custom-select-sm" id="position" name="position">
+                        <option value="top-left" selected>top-left</option>
+                        <option value="top-center">top-center</option>
+                        <option value="top-right">top-right</option>
+                        <option value="middle-left">middle-left</option>
+                        <option value="middle-center">middle-center</option>
+                        <option value="middle-right">middle-right</option>
+                        <option value="bottom-left">bottom-left</option>
+                        <option value="bottom-center">bottom-center</option>
+                        <option value="bottom-right">bottom-right</option>
+                    </select>
+                </div>
+                <div class="form-group text-center" style="margin-bottom: -2px;">
+                    <label class="text-center">Characters encoding</label>
+                </div>
+                
+        <div class="form-group text-center">
+            <div class="custom-control custom-control-inline custom-radio">
+                <input class="custom-control-input" type="radio" id="formCheck-2" name="format" value="latin" required checked>
+                <label class="custom-control-label" for="formCheck-2">Default characters</label>
+            </div>
+            <div class="custom-control custom-control-inline custom-radio">
+                <input class="custom-control-input" type="radio" id="formCheck-1" name="format" value="hiragana" required>
+                <label class="custom-control-label" for="formCheck-1">Hiragana</label>
+            </div>
+            <div class="custom-control custom-control-inline custom-radio">
+                <input class="custom-control-input" type="radio" id="formCheck-3" name="format" value="katakana" required>
+                <label class="custom-control-label" for="formCheck-3">Katakana</label>
+            </div>
+        </div>
+        </form>
+
+
+        <div class="form-group">
+            <button class="btn btn-outline-info btn-block btn-sm processBtn">
+                <span id="process">Process</span>
+                <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+            </button>
+        </div>
+        <div class="alert alert-info text-center tipsImport" role="alert">
+            <span>Import an image with a transparent background to have a surprise !</span>
+        </div>
+        <div class="alert alert-danger text-center errorMsg d-none" role="alert">
+            <span></span>
+        </div>
+
+    </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/bs-init.js"></script>
+    <script src="assets/js/script.js"></script>
+
+</body>
+
+</html>
