@@ -2,8 +2,19 @@
 
 //      [LATIN, HIRAGANA, KATANA] //
 define('LANG', array(
+        // KANJIS
         ["kami", "神", "kami"],
+        ["megami", "女神", "megami"],
+        ["otoko", "男", "otoko"],
+        ["sekai", "世界", "sekai"],
+        ["sama", "様", "sama"],
+        ["onna", "女", "onna"],
         ["koe", "声", "koe"],
+        ["bakuhatsu", "爆発", "bakuhatsu"],
+        ["bakemono", "化け物", "bakemono"],
+        ["kyuketsuki", "吸血鬼", "kyuketsuki"],
+        ["nomu", "飲む", "nomu"],
+        ["saikou", "最高", "saikou"],
         ["katachi", "形", "katachi"],
         ["shokuhin", "食品", "shokuhin"],
         ["oishii", "美味しい", "oishii"],
@@ -21,7 +32,8 @@ define('LANG', array(
         ["natsu", "夏", "natsu"],
         ["hikari", "光", "hikari"],
         ["kaze", "風", "kaze"],
-        ["空", "風", "sora"],
+        ["sora", "空", "sora"],
+        // KANAS
         ["kya", "きゃ", "キャ"],
         ["kyu", "きゅ", "キュ"],
         ["kyo", "きょ", "キョ"],
