@@ -6,3 +6,4 @@ define('INCORRECT_FORMAT', array('success' => 0, 'msg' => 'The characters encodi
 define('FONT_SIZE_INCORRECT', array('success' => 0, 'msg' => 'The font size must be between 10 and 100!'));
 define('INCORRECT_IMAGE', array('success' => 0, 'msg' => 'The uploaded image is incorrect!'));
 define('INCORRECT_POSITION', array('success' => 0, 'msg' => 'The position is incorrect!'));
+define('INCORRECT_COLOR', array('success' => 0, 'msg' => 'The color is incorrect!'));
