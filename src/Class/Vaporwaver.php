@@ -12,7 +12,7 @@ class Vaporwaver {
 
     public function __construct($data)
     {
-        $this->font = dirname(__FILE__) . "\..\MPLUSRounded1c.ttf";
+        $this->font = dirname(__FILE__) . "/../MPLUSRounded1c.ttf";
         $this->data = $data;
         $this->purpleOverlay = \imagecreate(600, 600);
         $colorOverlay = \imagecolorallocate($this->purpleOverlay, 250, 109, 255);
@@ -21,7 +21,8 @@ class Vaporwaver {
     private function translate($string, $alp)
     {
         $string = strtolower($string);
-        for ($i=0; $i < count(LANG); $i++) {
+        for ($i=0; $i < count(LANG); $i++) 
+        {
             $string = str_replace(LANG[$i][0], LANG[$i][$alp], $string);
         }
         return $string;
@@ -94,6 +95,7 @@ class Vaporwaver {
         }
     }
 
+    
     private function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct)
     {
         $cut = imagecreatetruecolor($src_w, $src_h);
@@ -117,10 +119,46 @@ class Vaporwaver {
         return ($im);
     }
 
+    private function keepRatio( $width, $height, $maxWidth, $maxHeight)
+    {
+        $imageDimensions = getimagesize($imageUrl);
+    
+        $imageWidth = $imageDimensions[0];
+        $imageHeight = $imageDimensions[1];
+    
+        $imageSize['width'] = $imageWidth;
+        $imageSize['height'] = $imageHeight;
+    
+        if($imageWidth > $maxWidth || $imageHeight > $maxHeight)
+        {
+            if ( $imageWidth > $imageHeight ) {
+                $imageSize['height'] = floor(($imageHeight/$imageWidth)*$maxWidth);
+                  $imageSize['width']  = $maxWidth;
+            } else {
+                $imageSize['width']  = floor(($imageWidth/$imageHeight)*$maxHeight);
+                $imageSize['height'] = $maxHeight;
+            }
+        }
+    
+        return $imageSize;
+    }
+
     private function cropCharacter(&$character)
     {
-        $character = imagescale($character, 700);
-        $character = imagecrop($character, ['x' => 0, 'y' => 0, 'width' => 600, 'height' => 600]);
+        $width  = imagesx($character);
+        $height = imagesy($character);
+        $min    = 600;
+        if ($height < $width) {
+            $ratio = $width/$height;
+            $height = $min;
+            $width = round($min * $ratio);
+        } else {
+            $ratio = $height/$width;
+            $width = $min;
+            $height = round($min * $ratio);
+        }
+        $character = imagescale($character, $width, $height);
+        $character = imagecrop($character, ['x' => 0, 'y' => 0, 'width' => $width, 'height' => $height]);
     }
 
     private function glitch(&$character, &$dest)
@@ -216,29 +254,39 @@ class Vaporwaver {
         $overlay                = $this->createColorOverlay(rand(200, 250), rand(80, 110), rand(230, 255));
         $noise                  = $this->createNoiseImg();
 
+        $character = imagecropauto($character, IMG_CROP_DEFAULT);
         $this->cropCharacter($character);
-        $this->fuseimage($character, $background);
+        $w = imagesx($character); /* 884 */
+        $h = imagesy($character);
+        if ($w < $h) {
+            $this->imagecopymerge_alpha($background, $character, 0, 0, 0, 0, 600, 600, 100);
+            $nx = 0;
+        } else {
+            $this->imagecopymerge_alpha($background, $character, 0, 0, ($w/2) / 5, 0, 600, 600, 100);
+            $nx = ($w/2) / 5;
+        }
         imagecopy($character_background, $background, 0, 0, 0, 0, 600, 600);
-        $glitchCharacter = $character;
+        imagedestroy($background);
+        $glitchCharacter = imagecrop($character, ['x' => $nx, 'y' => 0, 'width' => 600, 'height' => 600]);
+        imagedestroy($character);
         $this->glitch($glitchCharacter, $character_background);
+        imagedestroy($glitchCharacter);
         imagelayereffect($character_background, IMG_EFFECT_OVERLAY);
         $this->applyEffect($character_background, $noise, 35);
+        imagedestroy($noise);
         $this->applyEffect($character_background, $overlay, 60);
+        imagedestroy($overlay);
         $this->applyEffect($character_background, $effect, 60);
+        imagedestroy($effect);
 
         $txt = $this->createTxt();
         imagelayereffect($character_background, IMG_EFFECT_NORMAL);
         $this->imagecopymerge_alpha($character_background, $txt, 0, 0, 0, 0, 600, 600, 100);
-
+        imagedestroy($txt);
         ob_start();
-
         imagejpeg($character_background);
-
         $data = ob_get_contents();
         ob_end_clean();
-
-        imagedestroy($background);
-        imagedestroy($glitchCharacter);
         imagedestroy($character_background);
         $this->res = array("success" => 1, "base64" => 'data:image/jpeg;base64,' . base64_encode($data));
     }
