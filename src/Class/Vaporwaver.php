@@ -28,9 +28,12 @@ class Vaporwaver {
         return $string;
     }
 
-    private function createColorOverlay($r, $g, $b)
+    private function createColorOverlay($overlay)
     {
         $ov = \imagecreate(600, 600);
+        if($overlay == 'purple') { list($r, $g, $b) = [rand(200, 250), rand(80, 110), rand(230, 255)]; }
+        elseif($overlay == 'blue') { list($r, $g, $b) = [rand(80, 100), rand(80, 100), rand(230, 255)]; }
+        elseif($overlay == 'green') { list($r, $g, $b) = [rand(80, 100), rand(230, 255), rand(80, 100)]; }
         $co = \imagecolorallocate($ov, $r, $g, $b);
         return $ov;
     }
@@ -251,12 +254,12 @@ class Vaporwaver {
         $character              = \imagecreatefromstring($this->data['img']);
         $background             = \imagecreatefromjpeg( $this->randompic("./res/bg/") );
         $effect                 = \imagecreatefromjpeg( $this->randompic("./res/filters/") );
-        $overlay                = $this->createColorOverlay(rand(200, 250), rand(80, 110), rand(230, 255));
+        $overlay                = $this->createColorOverlay($this->data['overlay']);
         $noise                  = $this->createNoiseImg();
 
         $character = imagecropauto($character, IMG_CROP_DEFAULT);
         $this->cropCharacter($character);
-        $w = imagesx($character); /* 884 */
+        $w = imagesx($character);
         $h = imagesy($character);
         if ($w < $h) {
             $this->imagecopymerge_alpha($background, $character, 0, 0, 0, 0, 600, 600, 100);

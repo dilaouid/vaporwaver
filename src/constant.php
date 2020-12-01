@@ -7,3 +7,4 @@ define('FONT_SIZE_INCORRECT', array('success' => 0, 'msg' => 'The font size must
 define('INCORRECT_IMAGE', array('success' => 0, 'msg' => 'The uploaded image is incorrect!'));
 define('INCORRECT_POSITION', array('success' => 0, 'msg' => 'The position is incorrect!'));
 define('INCORRECT_COLOR', array('success' => 0, 'msg' => 'The color is incorrect!'));
+define('INCORRECT_OVERLAY', array('success' => 0, 'msg' => 'The selected overlay does not exists!'));

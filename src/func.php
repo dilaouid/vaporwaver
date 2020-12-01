@@ -25,9 +25,10 @@ function checkBase64($file)
 
 function checkEntries($post)
 {
-    if (!array_keys_exists(["text", "img", "font", "color", "position", "format"], $post)) return INCOMPLETE_KEYS;
+    if (!array_keys_exists(["text", "overlay", "img", "font", "color", "position", "format"], $post)) return INCOMPLETE_KEYS;
     $colorparse = trim(str_replace('#', '', $post['color']));
     $ex = explode('-', $post['position']);
+    if (!in_array($post['overlay'], ['purple', 'green', 'blue'])) return INCORRECT_OVERLAY;
     if (count($ex) != 2 || !in_array($ex[0], ['top', 'middle', 'bottom']) || !in_array($ex[1], ['right', 'center', 'left'])) return INCORRECT_POSITION;
     if (empty($colorparse) || strlen($colorparse) < 5) return INCORRECT_COLOR;
     if (!is_numeric($post["font"])) return NUMERIC_FONT;
