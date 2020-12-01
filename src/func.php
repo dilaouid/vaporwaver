@@ -25,7 +25,7 @@ function checkBase64($file)
 
 function checkEntries($post)
 {
-    $colorparse = trim(str_replace('#', $post['color']));
+    $colorparse = trim(str_replace('#', '', $post['color']));
     $ex = explode('-', $post['position']);
     if (count($ex) != 2 || !in_array($ex[0], ['top', 'middle', 'bottom']) || !in_array($ex[1], ['right', 'center', 'left'])) return INCORRECT_POSITION;
     if (!array_keys_exists(["text", "img", "font", "color", "position", "format"], $post)) return INCOMPLETE_KEYS;
