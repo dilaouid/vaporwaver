@@ -22,7 +22,7 @@ You can change the used font in the constructor of the Vaporwaver Class (`src/Cl
 ## TODO
 + A completly independant Vaporwaver Class, so you could use it in your own PHP project without any kind of adaptations !
 + Place the imported image right in the center (according to the size, it goes somewhere else atm)
-+ Some debugging (like the black bar at the right)
++ Some debugging
 
 ## Contribution
 The backgrounds from this repo are made by the very talented artists [aestheticshi7](https://www.instagram.com/aestheticshi7 "instagram") and [Maxime DES TOUCHES](https://www.behance.net/elreviae/ "behance"). Please go take a look at their great artworks !
