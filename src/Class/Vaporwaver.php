@@ -261,7 +261,7 @@ class Vaporwaver {
         $this->cropCharacter($character);
         $w = imagesx($character);
         $h = imagesy($character);
-        if ($w < $h) {
+        if ($w < $h || $w == $h) {
             $this->imagecopymerge_alpha($background, $character, 0, 0, 0, 0, 600, 600, 100);
             $nx = 0;
         } else {
