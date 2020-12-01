@@ -20,6 +20,7 @@ class Vaporwaver {
 
     private function translate($string, $alp)
     {
+        $string = strtolower($string);
         for ($i=0; $i < count(LANG); $i++) {
             $string = str_replace(LANG[$i][0], LANG[$i][$alp], $string);
         }
