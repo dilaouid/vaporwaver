@@ -126,18 +126,20 @@ class Vaporwaver {
     private function glitch(&$character, &$dest)
     {
         $colorChoice = rand(0, 1);
-        if ($colorChoice == 0) $this->posterizeImg($character, 600, 600, 255, 0);
-        else $this->posterizeImg($character, 600, 600, 0, 255);
-        $moved_picture = \imagecreatetruecolor(600, 600);
-        \imagecopy($moved_picture, $character, rand(-3, -5), 0, 0, 0, 600, 600);
+        $translate = rand(-3, -5);
+        $nw = 600 - abs($translate);
+        if ($colorChoice == 0) $this->posterizeImg($character, $nw, 600, 255, 0);
+        else $this->posterizeImg($character, $nw, 600, 0, 255);
+        $moved_picture = \imagecreatetruecolor($nw, 600);
+        \imagecopy($moved_picture, $character, $translate, 0, 0, 0, $nw, 600);
         $white = imagecolorallocate($moved_picture, 255, 255, 255);
         imagecolortransparent($moved_picture, $white);
-        $this->fuseimage($moved_picture, $dest, 60);
+        $this->fuseimage($moved_picture, $dest, 60, 400);
     }
 
-    private function fuseimage($source, $dest, $opacity = 100)
+    private function fuseimage($source, $dest, $opacity = 100, $w = 600)
     {
-        $this->imagecopymerge_alpha($dest, $source, 0, 0, 0, 0, 600, 600, $opacity);
+        $this->imagecopymerge_alpha($dest, $source, 0, 0, 0, 0, $w, 600, $opacity);
     }
 
     private function applyEffect(&$im, $effect, $pct)

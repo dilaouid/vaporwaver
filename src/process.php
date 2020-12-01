@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $checkEntries = checkEntries($post);
     if ($checkEntries !== true) printerror(json_encode($checkEntries));
     $post['img'] = base64_decode($post['img']);
-    $post['text'] = htmlspecialchars($post['text']);
     $vwaver = new  \Vaporwaver($post);
     $vwaver->Create();
     print_r(json_encode($vwaver->res));

@@ -25,11 +25,11 @@ function checkBase64($file)
 
 function checkEntries($post)
 {
+    if (!array_keys_exists(["text", "img", "font", "color", "position", "format"], $post)) return INCOMPLETE_KEYS;
     $colorparse = trim(str_replace('#', '', $post['color']));
     $ex = explode('-', $post['position']);
     if (count($ex) != 2 || !in_array($ex[0], ['top', 'middle', 'bottom']) || !in_array($ex[1], ['right', 'center', 'left'])) return INCORRECT_POSITION;
-    if (!array_keys_exists(["text", "img", "font", "color", "position", "format"], $post)) return INCOMPLETE_KEYS;
-    if (empty($post['color']) || strlen($colorparse) < 5) return INCORRECT_COLOR;
+    if (empty($colorparse) || strlen($colorparse) < 5) return INCORRECT_COLOR;
     if (!is_numeric($post["font"])) return NUMERIC_FONT;
     if (!in_array($post['format'], ["latin", "hiragana", "katakana"])) return INCORRECT_FORMAT;
     if ($post["font"] < 10 || $post["font"] > 100) return FONT_SIZE_INCORRECT;
