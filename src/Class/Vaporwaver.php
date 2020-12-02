@@ -254,10 +254,13 @@ class Vaporwaver {
         $character              = \imagecreatefromstring($this->data['img']);
         $background             = \imagecreatefromjpeg( $this->randompic("./res/bg/") );
         $effect                 = \imagecreatefromjpeg( $this->randompic("./res/filters/") );
+        $shape                  = \imagecreatefrompng( $this->randompic("./res/shape/") );
         $overlay                = $this->createColorOverlay($this->data['overlay']);
         $noise                  = $this->createNoiseImg();
 
         $character = imagecropauto($character, IMG_CROP_DEFAULT);
+        $this->imagecopymerge_alpha($background, $shape, 0, 0, 0, 0, 600, 600, 100);
+        imagedestroy($shape);
         $this->cropCharacter($character);
         $w = imagesx($character);
         $h = imagesy($character);
