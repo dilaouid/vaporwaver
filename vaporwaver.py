@@ -1,11 +1,11 @@
-import tkinter as tk
 from gui.window import configureWindow
 from gui.sides.left import leftFrame
 from gui.sides.right import rightFrame
+from data import globals
 
-window = configureWindow()
-leftFrame(window)
-rightFrame(window)
+globals["window"] = configureWindow()
+leftFrame()
+rightFrame()
 
 # run the main loop
-window.mainloop()
+globals["window"].mainloop()

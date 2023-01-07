@@ -1,9 +1,17 @@
 import tkinter as tk
-from tkinter import ttk
-from gui.sides.frames.field import defineField
+from data import globals
 
-def rightFrame(window):
-    right_frame = tk.Frame(window)
+# get the filename of the background
+def getFilename(pict: str):
+    filename = globals[pict].split("/")[-1]
+    filename = filename.split(".")[0]
+    return filename[0].upper() + filename[1:]
+
+def rightFrame():
+    # if right frame already exists, destroy it
+    if globals["window"].winfo_children():
+        globals["window"].winfo_children()[1].destroy()
+    right_frame = tk.Frame(globals["window"])
     right_frame.configure(bg="#303030", bd=0, border=1, relief=tk.FLAT)
     right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
     right_frame.place(relx=0.53, rely=0.05)
@@ -12,37 +20,37 @@ def rightFrame(window):
     posX_label = tk.Label(right_frame, text="Character X Position:", bg="#303030", fg="white")
     posX_label.grid(row=0, column=0, padx=10)
     posX = tk.Scale(right_frame, from_=-100, to=100, orient=tk.HORIZONTAL, bg="#303030", fg="white")
-    posX.set(0)
+    posX.set(globals["characterXpos"])
     posX.grid(row=1, column=0, padx=10, pady=10)
 
     posY_label = tk.Label(right_frame, text="Character Y Position", bg="#303030", fg="white")
     posY_label.grid(row=0, column=1, padx=10)
     posY = tk.Scale(right_frame, from_=-100, to=100, orient=tk.HORIZONTAL, bg="#303030", fg="white")
-    posY.set(0)
+    posY.set(globals["characterYpos"])
     posY.grid(row=1, column=1, padx=10, pady=10)
 
     width_label = tk.Label(right_frame, text="Character Width", bg="#303030", fg="white")
     width_label.grid(row=0, column=2, padx=10)
     width = tk.Scale(right_frame, from_=-100, to=100, orient=tk.HORIZONTAL, bg="#303030", fg="white")
-    width.set(0)
+    width.set(globals["characterWidth"])
     width.grid(row=1, column=2, padx=10, pady=10)
 
     height_label = tk.Label(right_frame, text="Character Height", bg="#303030", fg="white")
     height_label.grid(row=0, column=3, padx=10)
     height = tk.Scale(right_frame, from_=-100, to=100, orient=tk.HORIZONTAL, bg="#303030", fg="white")
-    height.set(0)
+    height.set(globals["characterHeight"])
     height.grid(row=1, column=3, padx=10, pady=10)
 
     glitch_label = tk.Label(right_frame, text="Character Glitch (0-10)", bg="#303030", fg="white")
     glitch_label.grid(row=2, column=0, padx=10)
     glitch = tk.Scale(right_frame, from_=0.0, to=10.0, orient=tk.HORIZONTAL, bg="#303030", fg="white", resolution=.1)
-    glitch.set(0)
+    glitch.set(globals["characterGlitch"])
     glitch.grid(row=3, column=0, padx=10, pady=10)
 
     gradient_label = tk.Label(right_frame, text="Gradient", bg="#303030", fg="white")
     gradient_label.grid(row=2, column=1)
     gradient_var = tk.StringVar(right_frame)
-    gradient_var.set("None")
+    gradient_var.set("None" if globals["characterGradient"] == 0 else globals["characterGradient"])
     gradient = tk.OptionMenu(right_frame, gradient_var, "None", "Option 1", "Option 2")
     gradient.grid(row=3, column=1)
 
@@ -55,7 +63,7 @@ def rightFrame(window):
     bglabel = tk.Label(right_frame, text="Background", bg="#303030", fg="white")
     bglabel.grid(row=5, column=0)
     bgvar = tk.StringVar(right_frame)
-    bgvar.set("Default")
+    bgvar.set(getFilename("background"))
     bg = tk.OptionMenu(right_frame, bgvar, "Default", "Option 2", "Option 3")
     bg.grid(row=6, column=0)
 
@@ -69,25 +77,25 @@ def rightFrame(window):
     msc_width_label = tk.Label(right_frame, text="Misc Width", bg="#303030", fg="white")
     msc_width_label.grid(row=5, column=2, padx=10)
     msc_width = tk.Scale(right_frame, from_=-100, to=100, orient=tk.HORIZONTAL, bg="#303030", fg="white")
-    msc_width.set(0)
+    msc_width.set(globals["miscWidth"])
     msc_width.grid(row=6, column=2, padx=10, pady=10)
 
     msc_height_label = tk.Label(right_frame, text="Misc Height", bg="#303030", fg="white")
     msc_height_label.grid(row=5, column=3, padx=10)
     msc_height = tk.Scale(right_frame, from_=-100, to=100, orient=tk.HORIZONTAL, bg="#303030", fg="white")
-    msc_height.set(0)
+    msc_height.set(globals["miscHeight"])
     msc_height.grid(row=6, column=3, padx=10, pady=10)
     
     msc_posX_label = tk.Label(right_frame, text="Misc X Position", bg="#303030", fg="white")
     msc_posX_label.grid(row=7, column=2, padx=10)
     msc_posX = tk.Scale(right_frame, from_=-100, to=100, orient=tk.HORIZONTAL, bg="#303030", fg="white")
-    msc_posX.set(0)
+    msc_posX.set(globals["miscPosX"])
     msc_posX.grid(row=8, column=2, padx=10, pady=10)
 
     msc_posY_label = tk.Label(right_frame, text="Misc Y Position", bg="#303030", fg="white")
     msc_posY_label.grid(row=7, column=3, padx=10)
     msc_posY = tk.Scale(right_frame, from_=-100, to=100, orient=tk.HORIZONTAL, bg="#303030", fg="white")
-    msc_posY.set(0)
+    msc_posY.set(globals["miscPosY"])
     msc_posY.grid(row=8, column=3, padx=10, pady=10)
 
     # Separator end of background and misc item edition
@@ -107,6 +115,7 @@ def rightFrame(window):
 
 
     # disable all the widgets in the right frame except the separator and bgvar
-    for child in right_frame.winfo_children():
-        if child != separator and child != bg and child != separator_second:
-            child.configure(state=tk.DISABLED)
+    if globals["character"] == None:
+        for child in right_frame.winfo_children():
+            if child != separator and child != bg and child != separator_second:
+                child.configure(state=tk.DISABLED)
