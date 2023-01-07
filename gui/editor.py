@@ -3,21 +3,35 @@ from tkinter import ttk
 import tkinter.filedialog
 from data import globals, gui
 
-""" L'astuce c'est de découper ton gui en plusieurs
-petites fonctions sombre merde que tu es """
-
 # get the filename of the background
 def getFilename(pict: str):
     filename = globals[pict].split("/")[-1]
     filename = filename.split(".")[0]
     return filename[0].upper() + filename[1:]
 
+def activateElements():
+    gui["el"]["warning_label"].destroy()
+    gui["el"]["save_button"].configure(state=tk.NORMAL)
+    for element in gui["el"]["char"]:
+        gui["el"]["char"][element].configure(state=tk.NORMAL)
+    for element in gui["el"]["misc"]:
+        gui["el"]["misc"][element].configure(state=tk.NORMAL)
+
+def resetValues():
+    for element in globals["val"]:
+        globals["val"][element] = 0
+    for element in gui["el"]["char"]:
+        gui["el"]["char"][element].set(0)
+    for element in gui["el"]["misc"]:
+        gui["el"]["misc"][element].set(0)
+
 def import_png():
     filepath = tkinter.filedialog.askopenfilename(title = "Select file" ,filetypes = [("png files","*.png")])
     with open(filepath, "rb") as f:
         globals["character"] = filepath
-        gui["element"]["warning_label"].destroy()
-        gui["element"]["save_button"].configure(state=tk.NORMAL)
+        activateElements()
+        resetValues()
+
 
 def scaleElement(element, _from, _to, frame, labelText, row, col, value, resolution=1):
     label = tk.Label(frame, text=labelText, bg="#303030", fg="white")
@@ -25,6 +39,7 @@ def scaleElement(element, _from, _to, frame, labelText, row, col, value, resolut
     element = tk.Scale(frame, from_=_from, to=_to, orient=tk.HORIZONTAL, bg="#303030", fg="white", resolution=resolution)
     element.set(value)
     element.grid(row=row+1, column=col, padx=10, pady=10)
+    return element
 
 def leftFrame():
     globals["leftFrame"] = tk.Frame(globals["window"])
@@ -46,17 +61,17 @@ def leftFrame():
     import_button = tk.Button(globals["leftFrame"], text="Import", command=import_png)
     import_button.place(x=50, y=555+60, width=300, height=30)
 
-    gui["element"]["save_button"] = tk.Button(globals["leftFrame"], text="Save", bg="blue", fg="white", state=tk.DISABLED if globals["character"] == None else tk.NORMAL)
-    gui["element"]["save_button"].place(x=360, y=555+60, width=150, height=30)
+    gui["el"]["save_button"] = tk.Button(globals["leftFrame"], text="Save", bg="blue", fg="white", state=tk.DISABLED if globals["character"] == None else tk.NORMAL)
+    gui["el"]["save_button"].place(x=360, y=555+60, width=150, height=30)
 
     # enable the save button if a character is imported
     if globals["character"] != None:
-        gui["element"]["save_button"].configure(state=tk.NORMAL)
+        gui["el"]["save_button"].configure(state=tk.NORMAL)
 
 
     # add a warning label
-    gui["element"]["warning_label"] = tk.Label(globals["leftFrame"], text="Warning: You need to import a character to start vaporwaving shits.", bg="#242424", fg="red", font=("Helvetica", 10))
-    gui["element"]["warning_label"].place(x=50, y=555+60+30, width=460, height=30)
+    gui["el"]["warning_label"] = tk.Label(globals["leftFrame"], text="Warning: You need to import a character to start vaporwaving shits.", bg="#242424", fg="red", font=("Helvetica", 10))
+    gui["el"]["warning_label"].place(x=50, y=555+60+30, width=460, height=30)
 
 def rightFrame():
     gui["frame"]["right"] = tk.Frame(globals["window"])
@@ -66,16 +81,16 @@ def rightFrame():
 
     # Character edition (width, height, position, etc.)
 
-    scaleElement(gui["element"]["character"]["posX"], -100, 100, gui["frame"]["right"], "Character X Position:", 0, 0, globals["characterXpos"])
-    scaleElement(gui["element"]["character"]["posY"], -100, 100, gui["frame"]["right"], "Character Y Position:", 0, 1, globals["characterYpos"])
-    scaleElement(gui["element"]["character"]["width"], -100, 100, gui["frame"]["right"], "Character Width:", 0, 2, globals["characterWidth"])
-    scaleElement(gui["element"]["character"]["height"], -100, 100, gui["frame"]["right"], "Character Height:", 0, 3, globals["characterHeight"])
-    scaleElement(gui["element"]["character"]["glitch"], 0, 10, gui["frame"]["right"], "Character Glitch (0-10):", 2, 0, globals["characterGlitch"], .1)
+    gui["el"]["char"]["posX"] = scaleElement(gui["el"]["char"]["posX"], -100, 100, gui["frame"]["right"], "Character X Position:", 0, 0, globals["val"]["characterXpos"])
+    gui["el"]["char"]["posY"] = scaleElement(gui["el"]["char"]["posY"], -100, 100, gui["frame"]["right"], "Character Y Position:", 0, 1, globals["val"]["characterYpos"])
+    gui["el"]["char"]["width"] = scaleElement(gui["el"]["char"]["width"], -100, 100, gui["frame"]["right"], "Character Width:", 0, 2, globals["val"]["characterWidth"])
+    gui["el"]["char"]["height"] = scaleElement(gui["el"]["char"]["height"], -100, 100, gui["frame"]["right"], "Character Height:", 0, 3, globals["val"]["characterHeight"])
+    gui["el"]["char"]["glitch"] = scaleElement(gui["el"]["char"]["glitch"], 0, 10, gui["frame"]["right"], "Character Glitch (0-10):", 2, 0, globals["val"]["characterGlitch"], .1)
 
     gradient_label = tk.Label(gui["frame"]["right"], text="Gradient", bg="#303030", fg="white")
     gradient_label.grid(row=2, column=1)
     gradient_var = tk.StringVar(gui["frame"]["right"])
-    gradient_var.set("None" if globals["characterGradient"] == 0 else globals["characterGradient"])
+    gradient_var.set("None" if globals["val"]["characterGradient"] == 0 else globals["val"]["characterGradient"])
     gradient = tk.OptionMenu(gui["frame"]["right"], gradient_var, "None", "Option 1", "Option 2")
     gradient.grid(row=3, column=1)
 
@@ -99,10 +114,10 @@ def rightFrame():
     msc = tk.OptionMenu(gui["frame"]["right"], mscvar, "None", "Option 1", "Option 2")
     msc.grid(row=6, column=1, pady=10)
 
-    scaleElement(gui["element"]["misc"]["posX"], -100, 100, gui["frame"]["right"], "Misc X Position:", 5, 2, globals["miscPosX"])
-    scaleElement(gui["element"]["misc"]["posY"], -100, 100, gui["frame"]["right"], "Misc Y Position:", 5, 3, globals["miscPosY"])
-    scaleElement(gui["element"]["misc"]["width"], -100, 100, gui["frame"]["right"], "Misc Width:", 7, 2, globals["miscWidth"])
-    scaleElement(gui["element"]["misc"]["height"], -100, 100, gui["frame"]["right"], "Misc Height:", 7, 3, globals["miscHeight"])
+    gui["el"]["misc"]["posX"] = scaleElement(gui["el"]["misc"]["posX"], -100, 100, gui["frame"]["right"], "Misc X Position:", 5, 2, globals["val"]["miscPosX"])
+    gui["el"]["misc"]["posY"] = scaleElement(gui["el"]["misc"]["posY"], -100, 100, gui["frame"]["right"], "Misc Y Position:", 5, 3, globals["val"]["miscPosY"])
+    gui["el"]["misc"]["width"] = scaleElement(gui["el"]["misc"]["width"], -100, 100, gui["frame"]["right"], "Misc Width:", 7, 2, globals["val"]["miscWidth"])
+    gui["el"]["misc"]["height"] = scaleElement(gui["el"]["misc"]["height"], -100, 100, gui["frame"]["right"], "Misc Height:", 7, 3, globals["val"]["miscHeight"])
 
     # Separator end of background and misc item edition
     separator_second = tk.Frame(gui["frame"]["right"], bg='white', width=200, height=1)

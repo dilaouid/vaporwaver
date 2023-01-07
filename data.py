@@ -12,18 +12,20 @@ def defineBackground(background):
 global globals
 globals = {
     "character": None,
-    "characterXpos": 0,
-    "characterYpos": 0,
-    "characterWidth": 0,
-    "characterHeight": 0,
-    "characterGlitch": 0,
-    "characterGradient": 0,
+    "val": {
+        "characterXpos": 0,
+        "characterYpos": 0,
+        "characterWidth": 0,
+        "characterHeight": 0,
+        "characterGlitch": 0,
+        "characterGradient": 0,
+        "miscPosX": 0,
+        "miscPosY": 0,
+        "miscWidth": 0,
+        "miscHeight": 0,
+    },
     "background": defineBackground("default"),
     "miscItem": None,
-    "miscPosX": 0,
-    "miscPosY": 0,
-    "miscWidth": 0,
-    "miscHeight": 0,
     "CRT": False,
     "Animate": False,
 }
@@ -35,10 +37,10 @@ gui = {
             "right": None,
             "window": None,
     },
-    "element": {
+    "el": {
         "warning_label": None,
         "save_button": None,
-        "character": {
+        "char": {
             "posX": None,
             "posY": None,
             "width": None,
