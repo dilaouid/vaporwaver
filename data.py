@@ -11,7 +11,6 @@ def defineBackground(background):
 
 global globals
 globals = {
-    "window": None,
     "character": None,
     "characterXpos": 0,
     "characterYpos": 0,
@@ -27,4 +26,30 @@ globals = {
     "miscHeight": 0,
     "CRT": False,
     "Animate": False,
+}
+
+global gui
+gui = {
+    "frame": {
+            "left": None,
+            "right": None,
+            "window": None,
+    },
+    "element": {
+        "warning_label": None,
+        "save_button": None,
+        "character": {
+            "posX": None,
+            "posY": None,
+            "width": None,
+            "height": None,
+            "glitch": None,
+        },
+        "misc": {
+            "posX": None,
+            "posY": None,
+            "width": None,
+            "height": None,
+        }
+    }
 }
