@@ -35,7 +35,7 @@ def rightFrame(window):
 
     glitch_label = tk.Label(right_frame, text="Character Glitch (0-10)", bg="#303030", fg="white")
     glitch_label.grid(row=2, column=0, padx=10)
-    glitch = tk.Scale(right_frame, from_=0, to=10, orient=tk.HORIZONTAL, bg="#303030", fg="white")
+    glitch = tk.Scale(right_frame, from_=0.0, to=10.0, orient=tk.HORIZONTAL, bg="#303030", fg="white", resolution=.1)
     glitch.set(0)
     glitch.grid(row=3, column=0, padx=10, pady=10)
 
