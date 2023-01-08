@@ -14,13 +14,5 @@ def scaleCharacter(axis, value):
     globals["val"]["characterScale"] = value
     image = Image.open(globals["characterPath"])
     image = image.resize((int(image.size[0] * int(globals["val"]["characterScale"]) / 100), int(image.size[1] * int(globals["val"]["characterScale"]) / 100)), Image.ANTIALIAS)
-    globals["previewChar"] = ImageTk.PhotoImage(image)
-    gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["previewChar"])
-
-def scaleMisc(axis, value):
-    if globals["misc"] is None:
-        return
-    globals["val"]["miscScale"] = value
-    image = Image.open(globals["miscPath"])
-    image = image.resize((int(image.size[0] * int(globals["val"]["miscScale"]) / 100), int(image.size[1] * int(globals["val"]["miscScale"]) / 100)), Image.ANTIALIAS)
-    gui["frame"]["canvas"].itemconfig(globals["misc"], image=ImageTk.PhotoImage(image))
+    globals["gcChar"] = ImageTk.PhotoImage(image)
+    gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])

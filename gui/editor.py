@@ -5,7 +5,7 @@ from data import globals, gui
 from PIL import Image, ImageTk
 from lib.background import changeBackground
 from lib.character import moveCharacter, scaleCharacter
-from lib.misc import changeMisc
+from lib.misc import changeMisc, moveMisc, scaleMisc
 
 def RBGAImage(path):
     return Image.open(path).convert("RGBA")
@@ -56,7 +56,6 @@ def import_png():
 
         activateElements()
         resetValues()
-
 
 def scaleElement(element, _from, _to, frame, labelText, row, col, value, func, resolution=1):
     label = tk.Label(frame, text=labelText, bg="#303030", fg="white")
@@ -144,9 +143,9 @@ def rightFrame():
     msc = tk.OptionMenu(gui["frame"]["right"], mscvar, *globals["miscs"], command=changeMisc)
     msc.grid(row=6, column=1, pady=10)
 
-    gui["el"]["misc"]["posX"] = scaleElement(gui["el"]["misc"]["posX"], -100, 100, gui["frame"]["right"], "Misc X Position:", 5, 2, "miscPosX", moveCharacter)
-    gui["el"]["misc"]["posY"] = scaleElement(gui["el"]["misc"]["posY"], -100, 100, gui["frame"]["right"], "Misc Y Position:", 5, 3, "miscPosY", moveCharacter)
-    gui["el"]["misc"]["scale"] = scaleElement(gui["el"]["misc"]["scale"], 1, 200, gui["frame"]["right"], "Misc Scale:", 7, 2, "miscScale", scaleCharacter)
+    gui["el"]["misc"]["posX"] = scaleElement(gui["el"]["misc"]["posX"], -100, 100, gui["frame"]["right"], "Misc X Position:", 5, 2, "miscPosX", moveMisc)
+    gui["el"]["misc"]["posY"] = scaleElement(gui["el"]["misc"]["posY"], -100, 100, gui["frame"]["right"], "Misc Y Position:", 5, 3, "miscPosY", moveMisc)
+    gui["el"]["misc"]["scale"] = scaleElement(gui["el"]["misc"]["scale"], 1, 200, gui["frame"]["right"], "Misc Scale:", 7, 2, "miscScale", scaleMisc)
 
     # Separator end of background and misc item edition
     separator_second = tk.Frame(gui["frame"]["right"], bg='white', width=200, height=1)

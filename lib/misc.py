@@ -3,21 +3,22 @@ from PIL import Image, ImageTk
 import tkinter as tk
 
 def changeMisc(file):
-    misc = tk.PhotoImage(file='picts/miscs/' + file + '.png')
+    globals["misc"] = 'picts/miscs/' + file + '.png'
+    misc = tk.PhotoImage(file=globals["misc"])
     gui["frame"]["canvas"].misc = misc
     gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=misc)
 
 def moveMisc(axis, value):
-    if globals["misc"] is None:
+    if globals["misc_container"] is None:
         return
     globals["val"][axis] = value
-    # change the position of the character according to % of the canvas
-    gui["frame"]["canvas"].coords(globals["misc"], gui["frame"]["canvas"].winfo_width() * int(globals["val"]["miscPosX"]) / 100, gui["frame"]["canvas"].winfo_height() * int(globals["val"]["miscPosY"]) / 100)
+    gui["frame"]["canvas"].coords(globals["misc_container"], gui["frame"]["canvas"].winfo_width() * int(globals["val"]["miscPosX"]) / 100, gui["frame"]["canvas"].winfo_height() * int(globals["val"]["miscPosY"]) / 100)
 
 def scaleMisc(axis, value):
-    if globals["misc"] is None:
+    if globals["misc_container"] is None:
         return
     globals["val"]["miscScale"] = value
-    image = Image.open(globals["miscPath"])
+    image = Image.open(globals["misc"])
     image = image.resize((int(image.size[0] * int(globals["val"]["miscScale"]) / 100), int(image.size[1] * int(globals["val"]["miscScale"]) / 100)), Image.ANTIALIAS)
-    gui["frame"]["canvas"].itemconfig(globals["misc"], image=ImageTk.PhotoImage(image))
+    globals["gcMisc"] = ImageTk.PhotoImage(image)
+    gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=globals["gcMisc"])

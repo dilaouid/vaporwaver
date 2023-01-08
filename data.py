@@ -35,7 +35,8 @@ global globals
 globals = {
     "character": None,
     "characterPath": None,
-    "previewChar": None,
+    "gcChar": None,
+    "gcMisc": None,
     "val": {
         "characterXpos": 0,
         "characterYpos": 0,
