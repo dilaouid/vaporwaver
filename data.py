@@ -9,6 +9,18 @@ def defineBackground(background):
         sys.exit()
     return "picts/backgrounds/" + background + ".png"
 
+def defineMisc(background):
+    if not os.path.exists("picts/miscs/" + background + ".png"):
+        tkinter.messagebox.showerror("Error", "The misc file '"+background+"' does not exist.")
+        sys.exit()
+    return "picts/miscs/" + background + ".png"
+
+def get_all_miscs():
+    miscs = []
+    for file in os.listdir("picts/miscs"):
+        if file.endswith(".png"):
+            miscs.append(file[:-4])
+    return miscs
 
 def get_all_backgrounds():
     backgrounds = []
@@ -32,13 +44,15 @@ globals = {
         "characterGradient": 0,
         "miscPosX": 0,
         "miscPosY": 0,
-        "miscWidth": 0,
-        "miscHeight": 0,
+        "miscScale": 100,
     },
     "background": defineBackground("default"),
     "backgrounds": get_all_backgrounds(),
     "background_container": None,
-    "miscItem": None,
+    "misc_container": None,
+    "misc": defineMisc("none"),
+    "miscs": get_all_miscs(),
+    "misc_container": None,
     "CRT": False,
     "Animate": False,
 }
@@ -58,14 +72,13 @@ gui = {
         "char": {
             "posX": None,
             "posY": None,
-            "scale": 1,
+            "scale": 100,
             "glitch": None,
         },
         "misc": {
             "posX": None,
             "posY": None,
-            "width": None,
-            "height": None,
+            "scale": 100,
         }
     }
 }

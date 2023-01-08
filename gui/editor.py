@@ -5,6 +5,7 @@ from data import globals, gui
 from PIL import Image, ImageTk
 from lib.background import changeBackground
 from lib.character import moveCharacter, scaleCharacter
+from lib.misc import changeMisc
 
 def RBGAImage(path):
     return Image.open(path).convert("RGBA")
@@ -32,7 +33,10 @@ def resetValues():
         else:
             gui["el"]["char"][element].set(0)
     for element in gui["el"]["misc"]:
-        gui["el"]["misc"][element].set(0)
+        if element == "scale":
+            gui["el"]["misc"][element].set(100)
+        else:
+            gui["el"]["misc"][element].set(0)
 
 def import_png():
     global gui
@@ -76,6 +80,10 @@ def leftFrame():
     preview_bg = tk.PhotoImage(file=globals["background"])
     gui["frame"]["preview"].preview_bg = preview_bg
     globals["background_container"] = gui["frame"]["canvas"].create_image((0, 0), image=gui["frame"]["preview"].preview_bg, anchor=tk.NW)
+
+    misc = tk.PhotoImage(file=globals["misc"])
+    gui["frame"]["preview"].misc = misc
+    globals["misc_container"] = gui["frame"]["canvas"].create_image((0, 0), image=gui["frame"]["preview"].misc, anchor=tk.NW)
     
     s = ttk.Style()
     s.configure("Dark.TButton", bg="red", fg="white", font=("Helvetica", 10), borderwidth=10, borderradius=20)
@@ -127,21 +135,18 @@ def rightFrame():
     bgvar.set(getFilename("background"))
     # create an option menu with all the values in the backgrounds list
     bg = tk.OptionMenu(gui["frame"]["right"], bgvar, *globals["backgrounds"], command=changeBackground)
-    print(globals["backgrounds"])
-    # bg = tk.OptionMenu(gui["frame"]["right"], bgvar, globals["backgrounds"])
     bg.grid(row=6, column=0)
 
     msclabel = tk.Label(gui["frame"]["right"], text="Misc Item", bg="#303030", fg="white")
     msclabel.grid(row=5, column=1)
     mscvar = tk.StringVar(gui["frame"]["right"])
-    mscvar.set("None")
-    msc = tk.OptionMenu(gui["frame"]["right"], mscvar, "None", "Option 1", "Option 2")
+    mscvar.set("none")
+    msc = tk.OptionMenu(gui["frame"]["right"], mscvar, *globals["miscs"], command=changeMisc)
     msc.grid(row=6, column=1, pady=10)
 
     gui["el"]["misc"]["posX"] = scaleElement(gui["el"]["misc"]["posX"], -100, 100, gui["frame"]["right"], "Misc X Position:", 5, 2, "miscPosX", moveCharacter)
     gui["el"]["misc"]["posY"] = scaleElement(gui["el"]["misc"]["posY"], -100, 100, gui["frame"]["right"], "Misc Y Position:", 5, 3, "miscPosY", moveCharacter)
-    gui["el"]["misc"]["width"] = scaleElement(gui["el"]["misc"]["width"], -100, 100, gui["frame"]["right"], "Misc Width:", 7, 2, "miscWidth", moveCharacter)
-    gui["el"]["misc"]["height"] = scaleElement(gui["el"]["misc"]["height"], -100, 100, gui["frame"]["right"], "Misc Height:", 7, 3, "miscHeight", moveCharacter)
+    gui["el"]["misc"]["scale"] = scaleElement(gui["el"]["misc"]["scale"], 1, 200, gui["frame"]["right"], "Misc Scale:", 7, 2, "miscScale", scaleCharacter)
 
     # Separator end of background and misc item edition
     separator_second = tk.Frame(gui["frame"]["right"], bg='white', width=200, height=1)
@@ -162,5 +167,5 @@ def rightFrame():
     # disable all the widgets in the right frame except the separator and bgvar
     if globals["character"] == None:
         for child in gui["frame"]["right"].winfo_children():
-            if child != separator and child != bg and child != separator_second:
+            if child != separator and child != bg and child != separator_second and child != msc:
                 child.configure(state=tk.DISABLED)
