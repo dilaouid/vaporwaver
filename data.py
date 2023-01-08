@@ -1,6 +1,7 @@
 import sys
 import os
 import tkinter.messagebox
+from PIL import Image
 
 def defineBackground(background):
     if not os.path.exists("picts/backgrounds/" + background + ".png"):
@@ -8,6 +9,15 @@ def defineBackground(background):
         sys.exit()
     return "picts/backgrounds/" + background + ".png"
 
+
+def get_all_backgrounds():
+    backgrounds = []
+    for file in os.listdir("picts/backgrounds"):
+        # if the file is a png file, and the image have a size of 1280x720 pixels (the size of the window) add it to the list
+        print(Image.open("picts/backgrounds/" + file).size)
+        if file.endswith(".png") and Image.open("picts/backgrounds/" + file).size == (460, 595):
+            backgrounds.append(file[:-4])
+    return backgrounds
 
 global globals
 globals = {
@@ -17,8 +27,7 @@ globals = {
     "val": {
         "characterXpos": 0,
         "characterYpos": 0,
-        "characterWidth": 0,
-        "characterHeight": 0,
+        "characterScale": 1,
         "characterGlitch": 0,
         "characterGradient": 0,
         "miscPosX": 0,
@@ -27,6 +36,8 @@ globals = {
         "miscHeight": 0,
     },
     "background": defineBackground("default"),
+    "backgrounds": get_all_backgrounds(),
+    "background_container": None,
     "miscItem": None,
     "CRT": False,
     "Animate": False,
@@ -47,8 +58,7 @@ gui = {
         "char": {
             "posX": None,
             "posY": None,
-            "width": None,
-            "height": None,
+            "scale": 1,
             "glitch": None,
         },
         "misc": {

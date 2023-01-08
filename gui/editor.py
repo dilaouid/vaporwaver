@@ -3,6 +3,7 @@ from tkinter import ttk
 import tkinter.filedialog
 from data import globals, gui
 from PIL import Image, ImageTk
+from lib.background import changeBackground
 from lib.character import moveCharacter
 
 def RBGAImage(path):
@@ -12,7 +13,7 @@ def RBGAImage(path):
 def getFilename(pict: str):
     filename = globals[pict].split("/")[-1]
     filename = filename.split(".")[0]
-    return filename[0].upper() + filename[1:]
+    return filename
 
 def activateElements():
     gui["el"]["warning_label"].destroy()
@@ -26,7 +27,10 @@ def resetValues():
     for element in globals["val"]:
         globals["val"][element] = 0
     for element in gui["el"]["char"]:
-        gui["el"]["char"][element].set(0)
+        if element == "scale":
+            gui["el"]["char"][element].set(1)
+        else:
+            gui["el"]["char"][element].set(0)
     for element in gui["el"]["misc"]:
         gui["el"]["misc"][element].set(0)
 
@@ -40,6 +44,8 @@ def import_png():
 
         character = tk.PhotoImage(file=globals["characterPath"])
         gui["frame"]["canvas"].character = character
+        # center the character according to the canvas
+
         globals["character"] = gui["frame"]["canvas"].create_image((0, 0), image=character, anchor=tk.NW)
 
         activateElements()
@@ -56,18 +62,18 @@ def scaleElement(element, _from, _to, frame, labelText, row, col, value, func, r
 
 def leftFrame():
     gui["frame"]["left"] = tk.Frame(gui["frame"]["window"])
-    gui["frame"]["left"].configure(bg="#242424", bd=0, border=1, relief=tk.FLAT, width=560, height=555)
+    gui["frame"]["left"].configure(bg="#242424", bd=0, border=1, relief=tk.FLAT, width=560, height=595)
     gui["frame"]["left"].pack(side=tk.LEFT, fill=tk.BOTH, padx=5, pady=5)
 
-    gui["frame"]["preview"] = tk.Frame(gui["frame"]["left"], width=460, height=555)
-    gui["frame"]["preview"].place(x=50, y=50)
+    gui["frame"]["preview"] = tk.Frame(gui["frame"]["left"], width=460, height=595)
+    gui["frame"]["preview"].place(x=50, y=10)
 
-    gui["frame"]["canvas"] = tk.Canvas(gui["frame"]["preview"], width=460, height=555, bg="grey")
+    gui["frame"]["canvas"] = tk.Canvas(gui["frame"]["preview"], width=460, height=595, bg="grey")
     gui["frame"]["canvas"].pack(fill=tk.BOTH, anchor=tk.NW)
 
     preview_bg = tk.PhotoImage(file=globals["background"])
     gui["frame"]["preview"].preview_bg = preview_bg
-    gui["frame"]["canvas"].create_image((0, 0), image=preview_bg, anchor=tk.NW)
+    globals["background_container"] = gui["frame"]["canvas"].create_image((0, 0), image=gui["frame"]["preview"].preview_bg, anchor=tk.NW)
     
     s = ttk.Style()
     s.configure("Dark.TButton", bg="red", fg="white", font=("Helvetica", 10), borderwidth=10, borderradius=20)
@@ -97,16 +103,15 @@ def rightFrame():
 
     gui["el"]["char"]["posX"] = scaleElement(gui["el"]["char"]["posX"], -100, 100, gui["frame"]["right"], "Character X Position:", 0, 0, "characterXpos", moveCharacter)
     gui["el"]["char"]["posY"] = scaleElement(gui["el"]["char"]["posY"], -100, 100, gui["frame"]["right"], "Character Y Position:", 0, 1, "characterYpos", moveCharacter)
-    gui["el"]["char"]["width"] = scaleElement(gui["el"]["char"]["width"], -100, 100, gui["frame"]["right"], "Character Width:", 0, 2, "characterWidth", moveCharacter)
-    gui["el"]["char"]["height"] = scaleElement(gui["el"]["char"]["height"], -100, 100, gui["frame"]["right"], "Character Height:", 0, 3, "characterHeight", moveCharacter)
-    gui["el"]["char"]["glitch"] = scaleElement(gui["el"]["char"]["glitch"], 0, 10, gui["frame"]["right"], "Character Glitch (0-10):", 2, 0, "characterGlitch", moveCharacter, .1)
+    gui["el"]["char"]["scale"] = scaleElement(gui["el"]["char"]["scale"], .1, 2, gui["frame"]["right"], "Character Scale:", 0, 2, "characterScale", moveCharacter, .1)
+    gui["el"]["char"]["glitch"] = scaleElement(gui["el"]["char"]["glitch"], 0, 10, gui["frame"]["right"], "Character Glitch (0-10):", 0, 3, "characterGlitch", moveCharacter, .1)
 
     gradient_label = tk.Label(gui["frame"]["right"], text="Gradient", bg="#303030", fg="white")
-    gradient_label.grid(row=2, column=1)
+    gradient_label.grid(row=2, column=0)
     gradient_var = tk.StringVar(gui["frame"]["right"])
     gradient_var.set("None" if globals["val"]["characterGradient"] == 0 else globals["val"]["characterGradient"])
     gradient = tk.OptionMenu(gui["frame"]["right"], gradient_var, "None", "Option 1", "Option 2")
-    gradient.grid(row=3, column=1)
+    gradient.grid(row=3, column=0)
 
     # Separator end of character edition
     separator = tk.Frame(gui["frame"]["right"], bg='white', width=200, height=1)
@@ -118,7 +123,10 @@ def rightFrame():
     bglabel.grid(row=5, column=0)
     bgvar = tk.StringVar(gui["frame"]["right"])
     bgvar.set(getFilename("background"))
-    bg = tk.OptionMenu(gui["frame"]["right"], bgvar, "Default", "Option 2", "Option 3")
+    # create an option menu with all the values in the backgrounds list
+    bg = tk.OptionMenu(gui["frame"]["right"], bgvar, *globals["backgrounds"], command=changeBackground)
+    print(globals["backgrounds"])
+    # bg = tk.OptionMenu(gui["frame"]["right"], bgvar, globals["backgrounds"])
     bg.grid(row=6, column=0)
 
     msclabel = tk.Label(gui["frame"]["right"], text="Misc Item", bg="#303030", fg="white")
