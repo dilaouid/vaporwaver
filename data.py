@@ -39,8 +39,9 @@ globals = {
         "characterXpos": 0,
         "characterYpos": 0,
         "characterScale": 100,
-        "characterGlitch": 0,
+        "characterGlitch": .1,
         "characterGradient": 0,
+        "characterGlitchSeed": 1,
         "miscPosX": 0,
         "miscPosY": 0,
         "miscScale": 100,
@@ -73,11 +74,13 @@ gui = {
             "posY": None,
             "scale": 100,
             "glitch": None,
+            "glitchSeed": None,
         },
         "misc": {
             "posX": None,
             "posY": None,
             "scale": 100,
+            "select": None
         }
     }
 }

@@ -4,7 +4,7 @@ import tkinter.filedialog
 from data import globals, gui
 from PIL import Image, ImageTk
 from lib.background import changeBackground
-from lib.character import moveCharacter, scaleCharacter
+from lib.character import moveCharacter, scaleCharacter, glitchCharacter
 from lib.misc import changeMisc, moveMisc, scaleMisc
 
 def RBGAImage(path):
@@ -26,16 +26,21 @@ def activateElements():
 
 def resetValues():
     for element in globals["val"]:
-        globals["val"][element] = 0
+        if element != "characterGlitch":
+            globals["val"][element] = 0
+        else:
+            globals["val"][element] = .1
     for element in gui["el"]["char"]:
         if element == "scale":
             gui["el"]["char"][element].set(100)
+        elif element == "glitch":
+            gui["el"]["char"][element].set(.1)
         else:
             gui["el"]["char"][element].set(0)
     for element in gui["el"]["misc"]:
         if element == "scale":
             gui["el"]["misc"][element].set(100)
-        else:
+        elif element != "select":
             gui["el"]["misc"][element].set(0)
 
 def import_png():
@@ -113,7 +118,8 @@ def rightFrame():
     gui["el"]["char"]["posX"] = scaleElement(gui["el"]["char"]["posX"], -100, 100, gui["frame"]["right"], "Character X Position:", 0, 0, "characterXpos", moveCharacter)
     gui["el"]["char"]["posY"] = scaleElement(gui["el"]["char"]["posY"], -100, 100, gui["frame"]["right"], "Character Y Position:", 0, 1, "characterYpos", moveCharacter)
     gui["el"]["char"]["scale"] = scaleElement(gui["el"]["char"]["scale"], 1, 200, gui["frame"]["right"], "Character Scale:", 0, 2, "characterScale", scaleCharacter)
-    gui["el"]["char"]["glitch"] = scaleElement(gui["el"]["char"]["glitch"], 0, 10, gui["frame"]["right"], "Character Glitch (0-10):", 0, 3, "characterGlitch", moveCharacter, .1)
+    gui["el"]["char"]["glitch"] = scaleElement(gui["el"]["char"]["glitch"], .1, 10, gui["frame"]["right"], "Character Glitch (0-10):", 0, 3, "characterGlitch", glitchCharacter, .1)
+    gui["el"]["char"]["glitchSeed"] = scaleElement(gui["el"]["char"]["glitchSeed"], 0, 100, gui["frame"]["right"], "Character Glitch Seed:", 2, 3, "characterGlitchSeed", glitchCharacter)
 
     gradient_label = tk.Label(gui["frame"]["right"], text="Gradient", bg="#303030", fg="white")
     gradient_label.grid(row=2, column=0)
@@ -140,8 +146,8 @@ def rightFrame():
     msclabel.grid(row=5, column=1)
     mscvar = tk.StringVar(gui["frame"]["right"])
     mscvar.set("none")
-    msc = tk.OptionMenu(gui["frame"]["right"], mscvar, *globals["miscs"], command=changeMisc)
-    msc.grid(row=6, column=1, pady=10)
+    gui["el"]["misc"]["select"] = tk.OptionMenu(gui["frame"]["right"], mscvar, *globals["miscs"], command=changeMisc)
+    gui["el"]["misc"]["select"].grid(row=6, column=1, pady=10)
 
     gui["el"]["misc"]["posX"] = scaleElement(gui["el"]["misc"]["posX"], -100, 100, gui["frame"]["right"], "Misc X Position:", 5, 2, "miscPosX", moveMisc)
     gui["el"]["misc"]["posY"] = scaleElement(gui["el"]["misc"]["posY"], -100, 100, gui["frame"]["right"], "Misc Y Position:", 5, 3, "miscPosY", moveMisc)
@@ -166,5 +172,5 @@ def rightFrame():
     # disable all the widgets in the right frame except the separator and bgvar
     if globals["character"] == None:
         for child in gui["frame"]["right"].winfo_children():
-            if child != separator and child != bg and child != separator_second and child != msc:
+            if child != separator and child != bg and child != separator_second:
                 child.configure(state=tk.DISABLED)

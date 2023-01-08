@@ -10,7 +10,7 @@ def changeMisc(file):
     for element in gui["el"]["misc"]:
         if element == "scale":
             gui["el"]["misc"][element].set(100)
-        else:
+        elif element != "select":
             gui["el"]["misc"][element].set(0)
     globals["val"]["miscScale"] = 100
     globals["val"]["miscPosX"] = 0
