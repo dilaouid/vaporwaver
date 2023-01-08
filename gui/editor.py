@@ -4,7 +4,7 @@ import tkinter.filedialog
 from data import globals, gui
 from PIL import Image, ImageTk
 from lib.background import changeBackground
-from lib.character import moveCharacter
+from lib.character import moveCharacter, scaleCharacter
 
 def RBGAImage(path):
     return Image.open(path).convert("RGBA")
@@ -28,7 +28,7 @@ def resetValues():
         globals["val"][element] = 0
     for element in gui["el"]["char"]:
         if element == "scale":
-            gui["el"]["char"][element].set(1)
+            gui["el"]["char"][element].set(100)
         else:
             gui["el"]["char"][element].set(0)
     for element in gui["el"]["misc"]:
@@ -39,14 +39,16 @@ def import_png():
     filepath = tkinter.filedialog.askopenfilename(title = "Select file" ,filetypes = [("png files","*.png")])
     with open(filepath, "rb") as f:
         # if there is already a character, destroy it
-        globals["character"] = None
+        if globals["character"] is None:
+            globals["character"] = None
         globals["characterPath"] = filepath
 
         character = tk.PhotoImage(file=globals["characterPath"])
-        gui["frame"]["canvas"].character = character
         # center the character according to the canvas
 
         globals["character"] = gui["frame"]["canvas"].create_image((0, 0), image=character, anchor=tk.NW)
+        gui["frame"]["canvas"].character = character
+        gui["frame"]["canvas"].itemconfig(globals["character"], image=character)
 
         activateElements()
         resetValues()
@@ -103,7 +105,7 @@ def rightFrame():
 
     gui["el"]["char"]["posX"] = scaleElement(gui["el"]["char"]["posX"], -100, 100, gui["frame"]["right"], "Character X Position:", 0, 0, "characterXpos", moveCharacter)
     gui["el"]["char"]["posY"] = scaleElement(gui["el"]["char"]["posY"], -100, 100, gui["frame"]["right"], "Character Y Position:", 0, 1, "characterYpos", moveCharacter)
-    gui["el"]["char"]["scale"] = scaleElement(gui["el"]["char"]["scale"], .1, 2, gui["frame"]["right"], "Character Scale:", 0, 2, "characterScale", moveCharacter, .1)
+    gui["el"]["char"]["scale"] = scaleElement(gui["el"]["char"]["scale"], 1, 200, gui["frame"]["right"], "Character Scale:", 0, 2, "characterScale", scaleCharacter)
     gui["el"]["char"]["glitch"] = scaleElement(gui["el"]["char"]["glitch"], 0, 10, gui["frame"]["right"], "Character Glitch (0-10):", 0, 3, "characterGlitch", moveCharacter, .1)
 
     gradient_label = tk.Label(gui["frame"]["right"], text="Gradient", bg="#303030", fg="white")

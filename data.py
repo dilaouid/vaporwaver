@@ -27,7 +27,7 @@ globals = {
     "val": {
         "characterXpos": 0,
         "characterYpos": 0,
-        "characterScale": 1,
+        "characterScale": 100,
         "characterGlitch": 0,
         "characterGradient": 0,
         "miscPosX": 0,
