@@ -12,6 +12,8 @@ def defineBackground(background):
 global globals
 globals = {
     "character": None,
+    "characterPath": None,
+    "previewChar": None,
     "val": {
         "characterXpos": 0,
         "characterYpos": 0,
@@ -35,6 +37,8 @@ gui = {
     "frame": {
             "left": None,
             "right": None,
+            "preview": None,
+            "canvas": None,
             "window": None,
     },
     "el": {
