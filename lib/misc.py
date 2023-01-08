@@ -7,6 +7,14 @@ def changeMisc(file):
     misc = tk.PhotoImage(file=globals["misc"])
     gui["frame"]["canvas"].misc = misc
     gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=misc)
+    for element in gui["el"]["misc"]:
+        if element == "scale":
+            gui["el"]["misc"][element].set(100)
+        else:
+            gui["el"]["misc"][element].set(0)
+    globals["val"]["miscScale"] = 100
+    globals["val"]["miscPosX"] = 0
+    globals["val"]["miscPosY"] = 0
 
 def moveMisc(axis, value):
     if globals["misc_container"] is None:

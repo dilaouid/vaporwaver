@@ -25,8 +25,6 @@ def get_all_miscs():
 def get_all_backgrounds():
     backgrounds = []
     for file in os.listdir("picts/backgrounds"):
-        # if the file is a png file, and the image have a size of 1280x720 pixels (the size of the window) add it to the list
-        print(Image.open("picts/backgrounds/" + file).size)
         if file.endswith(".png") and Image.open("picts/backgrounds/" + file).size == (460, 595):
             backgrounds.append(file[:-4])
     return backgrounds
