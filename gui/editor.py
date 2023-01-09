@@ -1,10 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
 import tkinter.filedialog
+from typing import Union
 from data import globals, gui
 from PIL import Image
 from lib.background import changeBackground
 from lib.character import moveCharacter, scaleCharacter, glitchCharacter, gradientCharacter
+from lib.crt import crt
 from lib.misc import changeMisc, moveMisc, scaleMisc
 
 def RBGAImage(path: str) -> Image:
@@ -167,8 +169,8 @@ def rightFrame() -> None:
     # Visual options
 
     crt_effect = tk.BooleanVar()
-    check_crt = tk.Checkbutton(gui["frame"]["right"], text="CRT Effect", variable=crt_effect, bg="#303030", fg="white", selectcolor="#303030", activebackground="#303030", activeforeground="white", highlightbackground="#303030", highlightcolor="#303030", highlightthickness=1, bd=0)
-    check_crt.grid(row=10, column=0, padx=10, pady=10)
+    gui["el"]["crt"]["checkbox"] = tk.Checkbutton(gui["frame"]["right"], text="CRT Effect", variable=crt_effect, bg="#303030", fg="white", selectcolor="#303030", activebackground="#303030", activeforeground="white", highlightbackground="#303030", highlightcolor="#303030", highlightthickness=1, bd=0, command=lambda: crt(crt_effect.get()))
+    gui["el"]["crt"]["checkbox"].grid(row=10, column=0, padx=10, pady=10)
 
     # disable all the widgets in the right frame except the separator and bgvar
     if globals["character"] == None:

@@ -44,6 +44,7 @@ globals = {
         "miscPosX": 0,
         "miscPosY": 0,
         "miscScale": 100,
+        "crt": False
     },
     "background": defineBackground("default"),
     "backgrounds": get_all_backgrounds(),
@@ -52,6 +53,7 @@ globals = {
     "misc": defineMisc("none"),
     "miscs": get_all_miscs(),
     "misc_container": None,
+    "crt_container": None,
     "gradients": [
         "none",
         "autumn",
@@ -67,7 +69,7 @@ globals = {
         "pink",
         "hot"
     ],
-    "CRT": False,
+    "CRT": None,
 }
 
 gui = {
@@ -94,6 +96,9 @@ gui = {
             "posY": None,
             "scale": 100,
             "select": None
+        },
+        "crt": {
+            "checkbox": None
         }
     }
 }
