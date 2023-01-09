@@ -29,7 +29,6 @@ def get_all_backgrounds():
             backgrounds.append(file[:-4])
     return backgrounds
 
-global globals
 globals = {
     "character": None,
     "characterPath": None,
@@ -56,7 +55,6 @@ globals = {
     "CRT": False,
 }
 
-global gui
 gui = {
     "frame": {
             "left": None,
