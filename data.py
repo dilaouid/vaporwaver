@@ -54,7 +54,6 @@ globals = {
     "miscs": get_all_miscs(),
     "misc_container": None,
     "CRT": False,
-    "Animate": False,
 }
 
 global gui

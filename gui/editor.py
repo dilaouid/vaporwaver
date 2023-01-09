@@ -26,7 +26,9 @@ def activateElements():
 
 def resetValues():
     for element in globals["val"]:
-        if element != "characterGlitch":
+        if element == "characterScale":
+            globals["val"][element] = 100
+        elif element != "characterGlitch":
             globals["val"][element] = 0
         else:
             globals["val"][element] = .1
@@ -44,20 +46,21 @@ def resetValues():
             gui["el"]["misc"][element].set(0)
 
 def import_png():
-    global gui
     filepath = tkinter.filedialog.askopenfilename(title = "Select file" ,filetypes = [("png files","*.png")])
+    if filepath == "":
+        return
     with open(filepath, "rb") as f:
         # if there is already a character, destroy it
         if globals["character"] is None:
             globals["character"] = None
         globals["characterPath"] = filepath
 
-        character = tk.PhotoImage(file=globals["characterPath"])
+        globals["gcChar"] = tk.PhotoImage(file=globals["characterPath"])
         # center the character according to the canvas
 
-        globals["character"] = gui["frame"]["canvas"].create_image((0, 0), image=character, anchor=tk.NW)
-        gui["frame"]["canvas"].character = character
-        gui["frame"]["canvas"].itemconfig(globals["character"], image=character)
+        globals["character"] = gui["frame"]["canvas"].create_image((0, 0), image=globals["gcChar"], anchor=tk.NW)
+        gui["frame"]["canvas"].character = globals["gcChar"]
+        gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
 
         activateElements()
         resetValues()
@@ -163,11 +166,6 @@ def rightFrame():
     crt_effect = tk.BooleanVar()
     check_crt = tk.Checkbutton(gui["frame"]["right"], text="CRT Effect", variable=crt_effect, bg="#303030", fg="white", selectcolor="#303030", activebackground="#303030", activeforeground="white", highlightbackground="#303030", highlightcolor="#303030", highlightthickness=1, bd=0)
     check_crt.grid(row=10, column=0, padx=10, pady=10)
-
-    animate = tk.BooleanVar()
-    check_animate = tk.Checkbutton(gui["frame"]["right"], text="Animate", variable=animate, bg="#303030", fg="white", selectcolor="#303030", activebackground="#303030", activeforeground="white", highlightbackground="#303030", highlightcolor="#303030", highlightthickness=1, bd=0)
-    check_animate.grid(row=10, column=1, padx=10, pady=10)
-
 
     # disable all the widgets in the right frame except the separator and bgvar
     if globals["character"] == None:
