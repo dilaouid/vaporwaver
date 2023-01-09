@@ -1,6 +1,6 @@
 import tkinter as tk
 
-def configureWindow():
+def configureWindow() -> tk.Tk:
     window = tk.Tk()
     window.title("vaporwaver")
     # define the window icon

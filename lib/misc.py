@@ -2,7 +2,7 @@ from data import globals, gui
 from PIL import Image, ImageTk
 import tkinter as tk
 
-def changeMisc(filename: str):
+def changeMisc(filename: str) -> None:
     globals["misc"] = 'picts/miscs/' + filename + '.png'
     misc: Image = tk.PhotoImage(file=globals["misc"])
     gui["frame"]["canvas"].misc = misc
@@ -16,13 +16,13 @@ def changeMisc(filename: str):
     globals["val"]["miscPosX"] = 0
     globals["val"]["miscPosY"] = 0
 
-def moveMisc(axis, value):
+def moveMisc(axis, value) -> None:
     if globals["misc_container"] is None:
         return
     globals["val"][axis] = value
     gui["frame"]["canvas"].coords(globals["misc_container"], gui["frame"]["canvas"].winfo_width() * int(globals["val"]["miscPosX"]) / 100, gui["frame"]["canvas"].winfo_height() * int(globals["val"]["miscPosY"]) / 100)
 
-def scaleMisc(axis, value):
+def scaleMisc(axis, value) -> None:
     if globals["misc_container"] is None:
         return
     globals["val"]["miscScale"] = value

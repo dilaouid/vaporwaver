@@ -1,3 +1,4 @@
+from typing import Union
 from data import globals, gui
 from PIL import Image, ImageTk
 from glitch_this import ImageGlitcher
@@ -22,7 +23,6 @@ def gradientCharacter(gradient: str):
 
     globals["gcChar"] = None
     gui["frame"]["canvas"].character = None
-    print(globals["val"]["characterGradient"])
     image = cv2.imread(globals["characterPath"], cv2.IMREAD_UNCHANGED)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = cv2.applyColorMap(image, getattr(cv2, "COLORMAP_" + globals["val"]["characterGradient"].upper()))
@@ -34,7 +34,7 @@ def gradientCharacter(gradient: str):
     gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
     return image
 
-def resizeAndUpdate():
+def resizeAndUpdate() -> Image:
     image: Image = Image.open(globals["characterPath"])
     if globals["val"]["characterGradient"] != "none":
         image = gradientCharacter(globals["val"]["characterGradient"])
@@ -42,14 +42,14 @@ def resizeAndUpdate():
     image.save('./tmp/char.png')
     return Image.open('./tmp/char.png')
 
-def moveCharacter(axis, value):
+def moveCharacter(axis, value) -> None:
     if globals["character"] is None:
         return
     globals["val"][axis] = value
     # change the position of the character according to % of the canvas
     gui["frame"]["canvas"].coords(globals["character"], gui["frame"]["canvas"].winfo_width() * int(globals["val"]["characterXpos"]) / 100, gui["frame"]["canvas"].winfo_height() * int(globals["val"]["characterYpos"]) / 100)
 
-def scaleCharacter(axis, value):
+def scaleCharacter(axis, value) -> None:
     if globals["character"] is None:
         return
     globals["val"]["characterScale"] = value
@@ -60,7 +60,7 @@ def scaleCharacter(axis, value):
     globals["gcChar"]: Image = ImageTk.PhotoImage(glitched_image)
     gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
 
-def glitchCharacter(axis, value):
+def glitchCharacter(axis, value) -> None:
     if globals["character"] is None:
         return
     globals["val"][axis] = value

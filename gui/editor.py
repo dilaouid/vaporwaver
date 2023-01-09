@@ -16,15 +16,16 @@ def getFilename(pict: str) -> str:
     filename = filename.split(".")[0]
     return filename
 
-def activateElements():
+def activateElements() -> None:
     gui["el"]["warning_label"].destroy()
     gui["el"]["save_button"].configure(state=tk.NORMAL)
     for element in gui["el"]["char"]:
         gui["el"]["char"][element].configure(state=tk.NORMAL)
     for element in gui["el"]["misc"]:
         gui["el"]["misc"][element].configure(state=tk.NORMAL)
+    gui["el"]["crt"]["checkbox"].configure(state=tk.NORMAL)
 
-def resetValues():
+def resetValues() -> None:
     for element in globals["val"]:
         if element == "characterGradient":
             continue
@@ -47,7 +48,7 @@ def resetValues():
         elif element != "select":
             gui["el"]["misc"][element].set(0)
 
-def import_png():
+def import_png() -> None:
     filepath: str = tkinter.filedialog.askopenfilename(title = "Select file" ,filetypes = [("png files","*.png")])
     if filepath == "":
         return
@@ -67,7 +68,7 @@ def import_png():
         activateElements()
         resetValues()
 
-def scaleElement(element, _from, _to, frame, labelText, row, col, value, func, resolution=1) -> tk.Scale:
+def scaleElement(element, _from: Union[int, float], _to: Union[int, float], frame: tk.Frame, labelText: str, row: int, col: int, value: Union[int, float], func, resolution=1) -> tk.Scale:
     label = tk.Label(frame, text=labelText, bg="#303030", fg="white")
     label.grid(row=row, column=col, padx=10)
     element = tk.Scale(frame, from_=_from, to=_to, orient=tk.HORIZONTAL, bg="#303030", fg="white", resolution=resolution, command=lambda x: func(value, x))
@@ -75,7 +76,7 @@ def scaleElement(element, _from, _to, frame, labelText, row, col, value, func, r
     element.grid(row=row+1, column=col, padx=10, pady=10)
     return element
 
-def leftFrame():
+def leftFrame() -> None:
     gui["frame"]["left"] = tk.Frame(gui["frame"]["window"])
     gui["frame"]["left"].configure(bg="#242424", bd=0, border=1, relief=tk.FLAT, width=560, height=595)
     gui["frame"]["left"].pack(side=tk.LEFT, fill=tk.BOTH, padx=5, pady=5)
@@ -112,7 +113,7 @@ def leftFrame():
     gui["el"]["warning_label"] = tk.Label(gui["frame"]["left"], text="Warning: You need to import a character to start vaporwaving shits.", bg="#242424", fg="red", font=("Helvetica", 10))
     gui["el"]["warning_label"].place(x=50, y=555+60+30, width=460, height=30)
 
-def rightFrame():
+def rightFrame() -> None:
     gui["frame"]["right"] = tk.Frame(gui["frame"]["window"])
     gui["frame"]["right"].configure(bg="#303030", bd=0, border=1, relief=tk.FLAT)
     gui["frame"]["right"].pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
