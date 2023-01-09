@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import ttk
 import tkinter.filedialog
@@ -58,6 +59,10 @@ def import_png() -> None:
         # if there is already a character, destroy it
         if globals["character"] is None:
             globals["character"] = None
+        
+        if os.path.exists("tmp/char.png"):
+            os.remove("tmp/char.png")
+
         globals["characterPath"] = filepath
 
         globals["gcChar"] = tk.PhotoImage(file=globals["characterPath"])
