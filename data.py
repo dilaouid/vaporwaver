@@ -39,8 +39,8 @@ globals = {
         "characterYpos": 0,
         "characterScale": 100,
         "characterGlitch": .1,
-        "characterGradient": 0,
         "characterGlitchSeed": 1,
+        "characterGradient": "none",
         "miscPosX": 0,
         "miscPosY": 0,
         "miscScale": 100,
@@ -52,6 +52,21 @@ globals = {
     "misc": defineMisc("none"),
     "miscs": get_all_miscs(),
     "misc_container": None,
+    "gradients": [
+        "none",
+        "autumn",
+        "bone",
+        "jet",
+        "winter",
+        "rainbow",
+        "ocean",
+        "summer",
+        "spring",
+        "cool",
+        "hsv",
+        "pink",
+        "hot"
+    ],
     "CRT": False,
 }
 
@@ -72,6 +87,7 @@ gui = {
             "scale": 100,
             "glitch": None,
             "glitchSeed": None,
+            "gradients": None,
         },
         "misc": {
             "posX": None,

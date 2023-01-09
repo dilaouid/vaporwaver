@@ -2,9 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 import tkinter.filedialog
 from data import globals, gui
-from PIL import Image, ImageTk
+from PIL import Image
 from lib.background import changeBackground
-from lib.character import moveCharacter, scaleCharacter, glitchCharacter
+from lib.character import moveCharacter, scaleCharacter, glitchCharacter, gradientCharacter
 from lib.misc import changeMisc, moveMisc, scaleMisc
 
 def RBGAImage(path):
@@ -26,6 +26,8 @@ def activateElements():
 
 def resetValues():
     for element in globals["val"]:
+        if element == "characterGradient":
+            continue
         if element == "characterScale":
             globals["val"][element] = 100
         elif element != "characterGlitch":
@@ -37,7 +39,7 @@ def resetValues():
             gui["el"]["char"][element].set(100)
         elif element == "glitch":
             gui["el"]["char"][element].set(.1)
-        else:
+        elif element != "gradients":
             gui["el"]["char"][element].set(0)
     for element in gui["el"]["misc"]:
         if element == "scale":
@@ -121,15 +123,15 @@ def rightFrame():
     gui["el"]["char"]["posX"] = scaleElement(gui["el"]["char"]["posX"], -100, 100, gui["frame"]["right"], "Character X Position:", 0, 0, "characterXpos", moveCharacter)
     gui["el"]["char"]["posY"] = scaleElement(gui["el"]["char"]["posY"], -100, 100, gui["frame"]["right"], "Character Y Position:", 0, 1, "characterYpos", moveCharacter)
     gui["el"]["char"]["scale"] = scaleElement(gui["el"]["char"]["scale"], 1, 200, gui["frame"]["right"], "Character Scale:", 0, 2, "characterScale", scaleCharacter)
-    gui["el"]["char"]["glitch"] = scaleElement(gui["el"]["char"]["glitch"], .1, 10, gui["frame"]["right"], "Character Glitch (0-10):", 0, 3, "characterGlitch", glitchCharacter, .1)
+    gui["el"]["char"]["glitch"] = scaleElement(gui["el"]["char"]["glitch"], .1, 10, gui["frame"]["right"], "Character Glitch (.1-10):", 0, 3, "characterGlitch", glitchCharacter, .1)
     gui["el"]["char"]["glitchSeed"] = scaleElement(gui["el"]["char"]["glitchSeed"], 0, 100, gui["frame"]["right"], "Character Glitch Seed:", 2, 3, "characterGlitchSeed", glitchCharacter)
 
     gradient_label = tk.Label(gui["frame"]["right"], text="Gradient", bg="#303030", fg="white")
     gradient_label.grid(row=2, column=0)
     gradient_var = tk.StringVar(gui["frame"]["right"])
-    gradient_var.set("None" if globals["val"]["characterGradient"] == 0 else globals["val"]["characterGradient"])
-    gradient = tk.OptionMenu(gui["frame"]["right"], gradient_var, "None", "Option 1", "Option 2")
-    gradient.grid(row=3, column=0)
+    gradient_var.set("none")
+    gui["el"]["char"]["gradients"] = tk.OptionMenu(gui["frame"]["right"], gradient_var, *globals["gradients"], command=lambda x: gradientCharacter(x))
+    gui["el"]["char"]["gradients"].grid(row=3, column=0)
 
     # Separator end of character edition
     separator = tk.Frame(gui["frame"]["right"], bg='white', width=200, height=1)
