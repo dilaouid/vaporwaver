@@ -9,6 +9,7 @@ from lib.background import changeBackground
 from lib.character import moveCharacter, scaleCharacter, glitchCharacter, gradientCharacter
 from lib.crt import crt
 from lib.misc import changeMisc, moveMisc, scaleMisc
+from lib.output import outputPicture
 
 def RBGAImage(path: str) -> Image:
     return Image.open(path).convert("RGBA")
@@ -108,7 +109,7 @@ def leftFrame() -> None:
     import_button = tk.Button(gui["frame"]["left"], text="Import", command=import_png)
     import_button.place(x=50, y=555+60, width=300, height=30)
 
-    gui["el"]["save_button"] = tk.Button(gui["frame"]["left"], text="Save", bg="blue", fg="white", state=tk.DISABLED if globals["character"] == None else tk.NORMAL)
+    gui["el"]["save_button"] = tk.Button(gui["frame"]["left"], text="Save", bg="blue", fg="white", state=tk.DISABLED if globals["character"] == None else tk.NORMAL, command=outputPicture)
     gui["el"]["save_button"].place(x=360, y=555+60, width=155, height=30)
 
     # enable the save button if a character is imported
