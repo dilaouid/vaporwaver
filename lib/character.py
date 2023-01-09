@@ -3,9 +3,9 @@ from PIL import Image, ImageTk
 from glitch_this import ImageGlitcher
 import cv2
 
-glitching = False
+glitching: bool = False
 
-def gradientCharacter(gradient):
+def gradientCharacter(gradient: str):
     if glitching == False:
         globals["val"]["characterGlitch"] = .1
         globals["val"]["characterGlitchSeed"] = 0
@@ -13,11 +13,13 @@ def gradientCharacter(gradient):
         gui["el"]["char"]["glitchSeed"].set(0)
     globals["val"]["characterGradient"] = gradient
     if globals["val"]["characterGradient"] == "none":
-        image = Image.open(globals["characterPath"])
+        image: Image = Image.open(globals["characterPath"])
         image = image.resize((int(image.size[0] * int(globals["val"]["characterScale"]) / 100), int(image.size[1] * int(globals["val"]["characterScale"]) / 100)), Image.LANCZOS)
         globals["gcChar"] = ImageTk.PhotoImage(image)
         gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
         return image
+
+
     globals["gcChar"] = None
     gui["frame"]["canvas"].character = None
     print(globals["val"]["characterGradient"])
@@ -33,7 +35,7 @@ def gradientCharacter(gradient):
     return image
 
 def resizeAndUpdate():
-    image = Image.open(globals["characterPath"])
+    image: Image = Image.open(globals["characterPath"])
     if globals["val"]["characterGradient"] != "none":
         image = gradientCharacter(globals["val"]["characterGradient"])
     image = image.resize((int(image.size[0] * int(globals["val"]["characterScale"]) / 100), int(image.size[1] * int(globals["val"]["characterScale"]) / 100)), Image.LANCZOS)
@@ -51,11 +53,11 @@ def scaleCharacter(axis, value):
     if globals["character"] is None:
         return
     globals["val"]["characterScale"] = value
-    image = resizeAndUpdate()
+    image: Image = resizeAndUpdate()
 
     glitcher = ImageGlitcher()
-    glitched_image = glitcher.glitch_image(image, color_offset=True, glitch_amount=float(globals["val"]["characterGlitch"]), seed=int(globals["val"]["characterGlitchSeed"]))
-    globals["gcChar"] = ImageTk.PhotoImage(glitched_image)
+    glitched_image: Image = glitcher.glitch_image(image, color_offset=True, glitch_amount=float(globals["val"]["characterGlitch"]), seed=int(globals["val"]["characterGlitchSeed"]))
+    globals["gcChar"]: Image = ImageTk.PhotoImage(glitched_image)
     gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
 
 def glitchCharacter(axis, value):

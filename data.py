@@ -3,26 +3,26 @@ import os
 import tkinter.messagebox
 from PIL import Image
 
-def defineBackground(background):
+def defineBackground(background) -> str:
     if not os.path.exists("picts/backgrounds/" + background + ".png"):
         tkinter.messagebox.showerror("Error", "The background file '"+background+"' does not exist.")
         sys.exit()
     return "picts/backgrounds/" + background + ".png"
 
-def defineMisc(background):
+def defineMisc(background) -> str:
     if not os.path.exists("picts/miscs/" + background + ".png"):
         tkinter.messagebox.showerror("Error", "The misc file '"+background+"' does not exist.")
         sys.exit()
     return "picts/miscs/" + background + ".png"
 
-def get_all_miscs():
+def get_all_miscs() -> list:
     miscs = []
     for file in os.listdir("picts/miscs"):
         if file.endswith(".png"):
             miscs.append(file[:-4])
     return miscs
 
-def get_all_backgrounds():
+def get_all_backgrounds() -> list:
     backgrounds = []
     for file in os.listdir("picts/backgrounds"):
         if file.endswith(".png") and Image.open("picts/backgrounds/" + file).size == (460, 595):

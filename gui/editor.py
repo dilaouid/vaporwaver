@@ -7,11 +7,11 @@ from lib.background import changeBackground
 from lib.character import moveCharacter, scaleCharacter, glitchCharacter, gradientCharacter
 from lib.misc import changeMisc, moveMisc, scaleMisc
 
-def RBGAImage(path):
+def RBGAImage(path: str) -> Image:
     return Image.open(path).convert("RGBA")
 
 # get the filename of the background
-def getFilename(pict: str):
+def getFilename(pict: str) -> str:
     filename = globals[pict].split("/")[-1]
     filename = filename.split(".")[0]
     return filename
@@ -48,7 +48,7 @@ def resetValues():
             gui["el"]["misc"][element].set(0)
 
 def import_png():
-    filepath = tkinter.filedialog.askopenfilename(title = "Select file" ,filetypes = [("png files","*.png")])
+    filepath: str = tkinter.filedialog.askopenfilename(title = "Select file" ,filetypes = [("png files","*.png")])
     if filepath == "":
         return
     with open(filepath, "rb") as f:
@@ -67,7 +67,7 @@ def import_png():
         activateElements()
         resetValues()
 
-def scaleElement(element, _from, _to, frame, labelText, row, col, value, func, resolution=1):
+def scaleElement(element, _from, _to, frame, labelText, row, col, value, func, resolution=1) -> tk.Scale:
     label = tk.Label(frame, text=labelText, bg="#303030", fg="white")
     label.grid(row=row, column=col, padx=10)
     element = tk.Scale(frame, from_=_from, to=_to, orient=tk.HORIZONTAL, bg="#303030", fg="white", resolution=resolution, command=lambda x: func(value, x))

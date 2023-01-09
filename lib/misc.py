@@ -2,9 +2,9 @@ from data import globals, gui
 from PIL import Image, ImageTk
 import tkinter as tk
 
-def changeMisc(file):
-    globals["misc"] = 'picts/miscs/' + file + '.png'
-    misc = tk.PhotoImage(file=globals["misc"])
+def changeMisc(filename: str):
+    globals["misc"] = 'picts/miscs/' + filename + '.png'
+    misc: Image = tk.PhotoImage(file=globals["misc"])
     gui["frame"]["canvas"].misc = misc
     gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=misc)
     for element in gui["el"]["misc"]:
