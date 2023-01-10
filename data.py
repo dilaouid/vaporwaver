@@ -3,17 +3,11 @@ import os
 import tkinter.messagebox
 from PIL import Image
 
-def defineBackground(background) -> str:
-    if not os.path.exists("picts/backgrounds/" + background + ".png"):
-        tkinter.messagebox.showerror("Error", "The background file '"+background+"' does not exist.")
+def define(file: str, folderName: str) -> str:
+    if not os.path.exists("picts/" + folderName + "/" + file + ".png"):
+        tkinter.messagebox.showerror("Error", "The " + folderName + " file '" + file + "' does not exist.")
         sys.exit()
-    return "picts/backgrounds/" + background + ".png"
-
-def defineMisc(background) -> str:
-    if not os.path.exists("picts/miscs/" + background + ".png"):
-        tkinter.messagebox.showerror("Error", "The misc file '"+background+"' does not exist.")
-        sys.exit()
-    return "picts/miscs/" + background + ".png"
+    return "picts/" + folderName + "/" + file + ".png"
 
 def get_all_miscs() -> list:
     miscs = []
@@ -47,11 +41,11 @@ globals = {
         "miscRotate": 0,
         "crt": False
     },
-    "background": defineBackground("default"),
+    "background": define("default", "backgrounds"),
     "backgrounds": get_all_backgrounds(),
     "background_container": None,
     "misc_container": None,
-    "misc": defineMisc("none"),
+    "misc": define("none", "miscs"),
     "miscs": get_all_miscs(),
     "misc_container": None,
     "crt_container": None,
