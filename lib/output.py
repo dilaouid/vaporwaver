@@ -1,4 +1,5 @@
 import os
+from tkinter import filedialog
 from data import globals
 from PIL import Image
 
@@ -24,5 +25,5 @@ def outputPicture() -> None:
     if globals["val"]["crt"]:
         crt = Image.open("picts/crt/crt.png")
         background.paste(crt, (0, 0), crt)
-    # save the image
-    background.save("tmp/output.png")
+    path = filedialog.asksaveasfilename(initialdir = os.getcwd(), title = "Select file", defaultextension=".png", initialfile="vaporwaved.png")
+    background.save(path)
