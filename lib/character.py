@@ -15,9 +15,11 @@ def gradientCharacter(gradient: str):
     if globals["val"]["characterGradient"] == "none":
         image: Image = Image.open(globals["characterPath"])
         image = image.resize((int(image.size[0] * int(globals["val"]["characterScale"]) / 100), int(image.size[1] * int(globals["val"]["characterScale"]) / 100)), Image.LANCZOS)
-        globals["gcChar"] = ImageTk.PhotoImage(image)
-        gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
         image.save('./tmp/char.png')
+        globals["gcChar"] = ImageTk.PhotoImage(image)
+        if globals["val"]["characterGlitch"] != .1:
+            globals["gcChar"] = glitching(Image.open('./tmp/char.png'))
+        gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
         return image
     globals["gcChar"] = None
     gui["frame"]["canvas"].character = None
