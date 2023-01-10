@@ -9,7 +9,7 @@ from PIL import Image
 from lib.background import changeBackground
 from lib.character import moveCharacter, scaleCharacter, glitchCharacter, gradientCharacter
 from lib.crt import crt
-from lib.misc import changeMisc, moveMisc, scaleMisc
+from lib.misc import changeMisc, moveMisc, scaleMisc, rotateMisc
 from lib.output import outputPicture
 
 def RBGAImage(path: str) -> Image:
@@ -167,6 +167,7 @@ def rightFrame() -> None:
     gui["el"]["misc"]["posX"] = scaleElement(gui["el"]["misc"]["posX"], -100, 100, gui["frame"]["right"], "Misc X Position:", 5, 2, "miscPosX", moveMisc)
     gui["el"]["misc"]["posY"] = scaleElement(gui["el"]["misc"]["posY"], -100, 100, gui["frame"]["right"], "Misc Y Position:", 5, 3, "miscPosY", moveMisc)
     gui["el"]["misc"]["scale"] = scaleElement(gui["el"]["misc"]["scale"], 1, 200, gui["frame"]["right"], "Misc Scale:", 7, 2, "miscScale", scaleMisc)
+    gui["el"]["misc"]["rotate"] = scaleElement(gui["el"]["misc"]["rotate"], -360, 360, gui["frame"]["right"], "Misc Rotation:", 7, 3, "miscRotate", rotateMisc)
 
     # Separator end of background and misc item edition
     separator_second = tk.Frame(gui["frame"]["right"], bg='white', width=200, height=1)

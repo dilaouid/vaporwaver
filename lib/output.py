@@ -9,6 +9,7 @@ def outputPicture() -> None:
     if globals["misc_container"] is not None and globals["misc"] != "picts/miscs/none.png":
         misc = Image.open(globals["misc"])
         misc = misc.resize((int(misc.size[0] * int(globals["val"]["miscScale"]) / 100), int(misc.size[1] * int(globals["val"]["miscScale"]) / 100)), Image.ANTIALIAS)
+        misc = misc.rotate(int(globals["val"]["miscRotate"]), expand=True)
         background.paste(misc, (int(background.size[0] * int(globals["val"]["miscPosX"]) / 100), int(background.size[1] * int(globals["val"]["miscPosY"]) / 100)), misc)
     # paste the character image if the file tmp/char.png exists
     if os.path.exists("tmp/char.png"):

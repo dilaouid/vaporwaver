@@ -44,6 +44,7 @@ globals = {
         "miscPosX": 0,
         "miscPosY": 0,
         "miscScale": 100,
+        "miscRotate": 0,
         "crt": False
     },
     "background": defineBackground("default"),
@@ -95,6 +96,7 @@ gui = {
             "posX": None,
             "posY": None,
             "scale": 100,
+            "rotate": None,
             "select": None
         },
         "crt": {
