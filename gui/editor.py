@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 from tkinter import ttk
 import tkinter.filedialog
+import tkinter.messagebox
 from typing import Union
 from data import globals, gui
 from PIL import Image
@@ -57,18 +58,18 @@ def import_png() -> None:
     if filepath == "":
         return
     with open(filepath, "rb") as f:
-        # if there is already a character, destroy it
-        if globals["character"] is None:
-            globals["character"] = None
-        
+        globals["characterPath"] = filepath
+        try:
+            globals["gcChar"] = tk.PhotoImage(file=globals["characterPath"])
+        except tk.TclError:
+            # show a window with an error message
+            tkinter.messagebox.showerror("Error", "The selected file is not a valid PNG file.")
+            return
+
         if os.path.exists("tmp/char.png"):
             os.remove("tmp/char.png")
 
-        globals["characterPath"] = filepath
-
-        globals["gcChar"] = tk.PhotoImage(file=globals["characterPath"])
         # center the character according to the canvas
-
         globals["character"] = gui["frame"]["canvas"].create_image((0, 0), image=globals["gcChar"], anchor=tk.NW)
         gui["frame"]["canvas"].character = globals["gcChar"]
         gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
