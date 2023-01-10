@@ -28,6 +28,7 @@ def scaleMisc(axis, value) -> None:
     globals["val"]["miscScale"] = value
     image = Image.open(globals["misc"])
     image = image.resize((int(image.size[0] * int(globals["val"]["miscScale"]) / 100), int(image.size[1] * int(globals["val"]["miscScale"]) / 100)), Image.ANTIALIAS)
+    image = image.rotate(int(globals["val"]["miscRotate"]), expand=True)
     globals["gcMisc"] = ImageTk.PhotoImage(image)
     gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=globals["gcMisc"])
 
