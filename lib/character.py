@@ -1,4 +1,4 @@
-from typing import Union
+import os
 from data import globals, gui
 from PIL import Image, ImageTk
 from glitch_this import ImageGlitcher
@@ -45,6 +45,8 @@ def resizeAndUpdate() -> Image:
     if globals["val"]["characterGradient"] != "none":
         image = gradientCharacter(globals["val"]["characterGradient"])
     image = image.resize((int(image.size[0] * int(globals["val"]["characterScale"]) / 100), int(image.size[1] * int(globals["val"]["characterScale"]) / 100)), Image.LANCZOS)
+    if not os.path.exists('./tmp'):
+        os.makedirs('./tmp')
     image.save('./tmp/char.png')
     return Image.open('./tmp/char.png')
 
