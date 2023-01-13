@@ -34,6 +34,7 @@ And you can select one of the predefined background image. The output image will
 
 ## Image ressources
 ⚠️ **WARNING** ⚠️
+
 For launching, this program needs three files in specific paths. They are already in the repository, but please do not rename nor delete them. You can replace their content tho.
 - `picts/backgrounds/default.png`
 - `picts/crt/crt.png`
