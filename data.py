@@ -35,6 +35,7 @@ globals = {
         "characterGlitch": .1,
         "characterGlitchSeed": 1,
         "characterGradient": "none",
+        "characterGlow": "none",
         "miscPosX": 0,
         "miscPosY": 0,
         "miscScale": 100,
@@ -64,6 +65,13 @@ globals = {
         "pink",
         "hot"
     ],
+    "glow": [
+        "none",
+        "red",
+        "green",
+        "blue",
+        "yellow"
+    ],
     "CRT": None,
 }
 
@@ -85,6 +93,7 @@ gui = {
             "glitch": None,
             "glitchSeed": None,
             "gradients": None,
+            "glow": None
         },
         "misc": {
             "posX": None,

@@ -72,3 +72,6 @@ def glitchCharacter(axis, value) -> None:
     image = resizeAndUpdate()
     globals["gcChar"] = glitching(image)
     gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
+
+def glowCharacter(color: str) -> None:
+    return

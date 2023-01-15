@@ -7,7 +7,7 @@ from typing import Union
 from data import globals, gui
 from PIL import Image
 from lib.background import changeBackground
-from lib.character import moveCharacter, scaleCharacter, glitchCharacter, gradientCharacter
+from lib.character import moveCharacter, scaleCharacter, glitchCharacter, gradientCharacter, glowCharacter
 from lib.crt import crt
 from lib.misc import changeMisc, moveMisc, scaleMisc, rotateMisc
 from lib.output import outputPicture
@@ -45,7 +45,7 @@ def resetValues() -> None:
             gui["el"]["char"][element].set(100)
         elif element == "glitch":
             gui["el"]["char"][element].set(.1)
-        elif element != "gradients":
+        elif element != "gradients" and element != "glow":
             gui["el"]["char"][element].set(0)
     for element in gui["el"]["misc"]:
         if element == "scale":
@@ -142,6 +142,13 @@ def rightFrame() -> None:
     gradient_var.set("none")
     gui["el"]["char"]["gradients"] = tk.OptionMenu(gui["frame"]["right"], gradient_var, *globals["gradients"], command=lambda x: gradientCharacter(x))
     gui["el"]["char"]["gradients"].grid(row=3, column=0)
+
+    gradient_label = tk.Label(gui["frame"]["right"], text="Glow", bg="#303030", fg="white")
+    gradient_label.grid(row=2, column=1)
+    gradient_var = tk.StringVar(gui["frame"]["right"])
+    gradient_var.set("none")
+    gui["el"]["char"]["glow"] = tk.OptionMenu(gui["frame"]["right"], gradient_var, *globals["glow"], command=lambda x: glowCharacter(x))
+    gui["el"]["char"]["glow"].grid(row=3, column=1)
 
     # Separator end of character edition
     separator = tk.Frame(gui["frame"]["right"], bg='white', width=200, height=1)
