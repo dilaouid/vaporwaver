@@ -77,7 +77,7 @@ def import_png() -> None:
         activateElements()
         resetValues()
 
-def scaleElement(element, _from: Union[int, float], _to: Union[int, float], frame: tk.Frame, labelText: str, row: int, col: int, value: Union[int, float], func, resolution=1) -> tk.Scale:
+def scaleElement(element, _from: Union[int, float], _to: Union[int, float], frame: tk.Frame, labelText: str, row: int, col: int, value: str, func, resolution=1) -> tk.Scale:
     label = tk.Label(frame, text=labelText, bg="#303030", fg="white")
     label.grid(row=row, column=col, padx=10)
     element = tk.Scale(frame, from_=_from, to=_to, orient=tk.HORIZONTAL, bg="#303030", fg="white", resolution=resolution, command=lambda x: func(value, x))
