@@ -70,7 +70,7 @@ def import_png() -> None:
             os.remove("tmp/char.png")
 
         # center the character according to the canvas
-        globals["character"] = gui["frame"]["canvas"].create_image((0, 0), image=globals["gcChar"], anchor=tk.NW)
+        globals["character"] = gui["frame"]["canvas"].create_image((0, 0), image=globals["gcChar"], anchor=tk.CENTER)
         gui["frame"]["canvas"].character = globals["gcChar"]
         gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
 
@@ -130,8 +130,8 @@ def rightFrame() -> None:
 
     # Character edition (width, height, position, etc.)
 
-    gui["el"]["char"]["posX"] = scaleElement(gui["el"]["char"]["posX"], -100, 100, gui["frame"]["right"], "Character X Position:", 0, 0, "characterXpos", moveCharacter)
-    gui["el"]["char"]["posY"] = scaleElement(gui["el"]["char"]["posY"], -100, 100, gui["frame"]["right"], "Character Y Position:", 0, 1, "characterYpos", moveCharacter)
+    gui["el"]["char"]["posX"] = scaleElement(gui["el"]["char"]["posX"], -150, 150, gui["frame"]["right"], "Character X Position:", 0, 0, "characterXpos", moveCharacter)
+    gui["el"]["char"]["posY"] = scaleElement(gui["el"]["char"]["posY"], -150, 150, gui["frame"]["right"], "Character Y Position:", 0, 1, "characterYpos", moveCharacter)
     gui["el"]["char"]["scale"] = scaleElement(gui["el"]["char"]["scale"], 1, 200, gui["frame"]["right"], "Character Scale:", 0, 2, "characterScale", scaleCharacter)
     gui["el"]["char"]["glitch"] = scaleElement(gui["el"]["char"]["glitch"], .1, 10, gui["frame"]["right"], "Character Glitch (.1-10):", 0, 3, "characterGlitch", glitchCharacter, .1)
     gui["el"]["char"]["glitchSeed"] = scaleElement(gui["el"]["char"]["glitchSeed"], 0, 100, gui["frame"]["right"], "Character Glitch Seed:", 2, 3, "characterGlitchSeed", glitchCharacter)

@@ -15,12 +15,11 @@ def outputPicture() -> None:
     # paste the character image if the file tmp/char.png exists
     if os.path.exists("tmp/char.png"):
         character = Image.open("tmp/char.png")
-        background.paste(character, (int(background.size[0] * int(globals["val"]["characterXpos"]) / 100), int(background.size[1] * int(globals["val"]["characterYpos"]) / 100)), character)
     else:
         # if the file tmp/char.png does not exist, paste the character image from the selected character with the given position and scale
         character = Image.open(globals["characterPath"])
         character = character.resize((int(character.size[0] * int(globals["val"]["characterScale"]) / 100), int(character.size[1] * int(globals["val"]["characterScale"]) / 100)), Image.ANTIALIAS)
-        background.paste(character, (int(background.size[0] * int(globals["val"]["characterXpos"]) / 100), int(background.size[1] * int(globals["val"]["characterYpos"]) / 100)), character)
+    background.paste(character, (int(background.size[0] * int(globals["val"]["characterXpos"]) / 100) - int(character.size[0] / 2), int(background.size[1] * int(globals["val"]["characterYpos"]) / 100) - int(character.size[1] / 2)), character)
     # apply the crt effect if the crt checkbox is checked
     if globals["val"]["crt"]:
         crt = Image.open("picts/crt/crt.png")
