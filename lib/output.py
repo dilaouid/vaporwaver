@@ -42,7 +42,11 @@ def outputPicture(cli: bool = False) -> None:
         character = Image.open(globals["render"]["characterPath"])
         character = resizeCharacter(character)
         character = min_rotateCharacter(character)
-        character = applygradient('./tmp/char-cli.png')
+        if globals["render"]["val"]["characterGradient"] != "none":
+            character = applygradient('./tmp/char-cli.png')
+        else:
+            character.save('./tmp/char-cli.png')
+            character = Image.open('./tmp/char-cli.png')
         character = glitchingCLI(character)
         background.paste(character, (int(background.size[0] * int(globals["render"]["val"]["characterXpos"]) / 100) - int(character.size[0] / 2), int(background.size[1] * int(globals["render"]["val"]["characterYpos"]) / 100) - int(character.size[1] / 2)), character)
         if globals["render"]["val"]["crt"]:
