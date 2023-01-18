@@ -39,10 +39,10 @@ globals = {
             "characterGlitch": .1,
             "characterGlitchSeed": 1,
             "characterGradient": "none",
-        "characterGlow": "none",
-        "miscPosX": 0,
-        "miscPosY": 0,
-        "miscScale": 100,
+            "characterGlow": "none",
+            "miscPosX": 0,
+            "miscPosY": 0,
+            "miscScale": 100,
             "miscRotate": 0,
             "crt": False
         },
@@ -66,7 +66,13 @@ globals = {
         "cool",
         "hsv",
         "pink",
-        "hot"
+        "hot",
+        "parula",
+        "magma",
+        "inferno",
+        "plasma",
+        "viridis",
+        "cividis"
     ],
     "glow": [
         "none",
