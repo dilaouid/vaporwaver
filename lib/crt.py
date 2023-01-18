@@ -2,7 +2,7 @@ from data import globals, gui
 import tkinter as tk
 
 def crt(enable: bool)-> None:
-    globals["val"]["crt"] = enable
+    globals["render"]["val"]["crt"] = enable
     if enable == True:
         image = tk.PhotoImage(file='./picts/crt/crt.png')
         globals["CRT"] = gui["frame"]["canvas"].create_image((0, 0), image=image, anchor=tk.NW)

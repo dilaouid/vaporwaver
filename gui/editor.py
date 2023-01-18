@@ -7,7 +7,7 @@ from typing import Union
 from data import globals, gui
 from PIL import Image
 from lib.background import changeBackground
-from lib.character import moveCharacter, scaleCharacter, glitchCharacter, gradientCharacter, glowCharacter
+from lib.character import moveCharacter, rotateCharacter, scaleCharacter, glitchCharacter, gradientCharacter, glowCharacter
 from lib.crt import crt
 from lib.misc import changeMisc, moveMisc, scaleMisc, rotateMisc
 from lib.output import outputPicture
@@ -17,7 +17,7 @@ def RBGAImage(path: str) -> Image:
 
 # get the filename of the background
 def getFilename(pict: str) -> str:
-    filename = globals[pict].split("/")[-1]
+    filename = globals["render"][pict].split("/")[-1]
     filename = filename.split(".")[0]
     return filename
 
@@ -31,15 +31,15 @@ def activateElements() -> None:
     gui["el"]["crt"]["checkbox"].configure(state=tk.NORMAL)
 
 def resetValues() -> None:
-    for element in globals["val"]:
+    for element in globals["render"]["val"]:
         if element == "characterGradient":
             continue
         if element == "characterScale":
-            globals["val"][element] = 100
+            globals["render"]["val"][element] = 100
         elif element != "characterGlitch":
-            globals["val"][element] = 0
+            globals["render"]["val"][element] = 0
         else:
-            globals["val"][element] = .1
+            globals["render"]["val"][element] = .1
     for element in gui["el"]["char"]:
         if element == "scale":
             gui["el"]["char"][element].set(100)
@@ -58,9 +58,9 @@ def import_png() -> None:
     if filepath == "":
         return
     with open(filepath, "rb") as f:
-        globals["characterPath"] = filepath
+        globals["render"]["characterPath"] = filepath
         try:
-            globals["gcChar"] = tk.PhotoImage(file=globals["characterPath"])
+            globals["gcChar"] = tk.PhotoImage(file=globals["render"]["characterPath"])
         except tk.TclError:
             # show a window with an error message
             tkinter.messagebox.showerror("Error", "The selected file is not a valid PNG file.")
@@ -81,7 +81,7 @@ def scaleElement(element, _from: Union[int, float], _to: Union[int, float], fram
     label = tk.Label(frame, text=labelText, bg="#303030", fg="white")
     label.grid(row=row, column=col, padx=10)
     element = tk.Scale(frame, from_=_from, to=_to, orient=tk.HORIZONTAL, bg="#303030", fg="white", resolution=resolution, command=lambda x: func(value, x))
-    element.set(globals["val"][value])
+    element.set(globals["render"]["val"][value])
     element.grid(row=row+1, column=col, padx=10, pady=10)
     return element
 
@@ -96,11 +96,11 @@ def leftFrame() -> None:
     gui["frame"]["canvas"] = tk.Canvas(gui["frame"]["preview"], width=460, height=595, bg="grey")
     gui["frame"]["canvas"].pack(fill=tk.BOTH, anchor=tk.NW)
 
-    preview_bg = tk.PhotoImage(file=globals["background"])
+    preview_bg = tk.PhotoImage(file=globals["render"]["background"])
     gui["frame"]["preview"].preview_bg = preview_bg
     globals["background_container"] = gui["frame"]["canvas"].create_image((0, 0), image=gui["frame"]["preview"].preview_bg, anchor=tk.NW)
 
-    misc = tk.PhotoImage(file=globals["misc"])
+    misc = tk.PhotoImage(file=globals["render"]["misc"])
     gui["frame"]["preview"].misc = misc
     globals["misc_container"] = gui["frame"]["canvas"].create_image((0, 0), image=gui["frame"]["preview"].misc, anchor=tk.NW)
     
@@ -134,6 +134,7 @@ def rightFrame() -> None:
     gui["el"]["char"]["posY"] = scaleElement(gui["el"]["char"]["posY"], -150, 150, gui["frame"]["right"], "Character Y Position:", 0, 1, "characterYpos", moveCharacter)
     gui["el"]["char"]["scale"] = scaleElement(gui["el"]["char"]["scale"], 1, 200, gui["frame"]["right"], "Character Scale:", 0, 2, "characterScale", scaleCharacter)
     gui["el"]["char"]["glitch"] = scaleElement(gui["el"]["char"]["glitch"], .1, 10, gui["frame"]["right"], "Character Glitch (.1-10):", 0, 3, "characterGlitch", glitchCharacter, .1)
+    gui["el"]["char"]["rotate"] = scaleElement(gui["el"]["char"]["rotate"], -360, 360, gui["frame"]["right"], "Character Rotation:", 2, 2, "characterRotation", rotateCharacter)
     gui["el"]["char"]["glitchSeed"] = scaleElement(gui["el"]["char"]["glitchSeed"], 0, 100, gui["frame"]["right"], "Character Glitch Seed:", 2, 3, "characterGlitchSeed", glitchCharacter)
 
     gradient_label = tk.Label(gui["frame"]["right"], text="Gradient", bg="#303030", fg="white")
