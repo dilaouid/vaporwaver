@@ -68,7 +68,7 @@ infos = {
         "range": [0, 100]
     },
     "characterGradient": {
-        "description": "Character gradient to apply, cvt colormap name (default: none) [none, autumn, bone, jet, winter, rainbow, ocean, summer, spring, cool, hsv, pink, hot, parula, magma, inferno, plasma, viridis]",
+        "description": "Character gradient to apply, cvt colormap name (default: none) [none, autumn, bone, jet, winter, rainbow, ocean, summer, spring, cool, hsv, pink, hot, parula, magma, inferno, plasma, viridis, cividis, deepgreen]",
         "flag": "-cgd",
         "range": globals["gradients"]
     },

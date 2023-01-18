@@ -73,7 +73,8 @@ globals = {
         "inferno",
         "plasma",
         "viridis",
-        "cividis"
+        "cividis",
+        "deepgreen"
     ],
     "glow": [
         "none",
