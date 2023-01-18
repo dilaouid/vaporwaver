@@ -46,6 +46,7 @@ globals = {
             "miscRotate": 0,
             "crt": False
         },
+        "output": ""
     },
     "backgrounds": get_all_backgrounds(),
     "background_container": None,
