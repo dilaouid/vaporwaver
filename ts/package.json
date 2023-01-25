@@ -1,0 +1,26 @@
+{
+  "name": "vaporwaverjs",
+  "version": "1.0.0",
+  "description": "JavaScript port of the Vaporwaver Python library. Vaporwaver is a Python library for generating vaporwave image art.",
+  "main": "index.ts",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dilaouid/vaporwaver.py.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dilaouid/vaporwaver.py/issues"
+  },
+  "homepage": "https://github.com/dilaouid/vaporwaver.py#readme",
+  "devDependencies": {
+    "@types/node": "^18.11.18"
+  }
+}
