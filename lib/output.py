@@ -53,3 +53,5 @@ def outputPicture(cli: bool = False) -> None:
             crt = Image.open("picts/crt/crt.png")
             background.paste(crt, (0, 0), crt)
     background.save(path)
+    if os.path.exists("./tmp/char-cli.png"):
+        os.remove("./tmp/char-cli.png")
