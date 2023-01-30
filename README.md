@@ -10,7 +10,7 @@ A Python3 script to create vaporwave image based on PNG files. An improved versi
 - glitch-this (https://github.com/TotallyNotChase/glitch-this)
 - opencv-python
 
-You can install them with `pip install -r requirements.txt`
+You can install them with `pip install -r requirements.txt` after acceding to the `py` directory.
 
 ![example](https://github.com/dilaouid/vaporwaver.py/blob/media/example.png)
 
@@ -36,14 +36,14 @@ And you can select one of the predefined background image. The output image will
 ⚠️ **WARNING** ⚠️
 
 For launching, this program needs three files in specific paths. They are already in the repository, but please do not rename nor delete them. You can replace their content tho.
-- `picts/backgrounds/default.png`
-- `picts/crt/crt.png`
-- `picts/miscs/none.png`
+- `py/picts/backgrounds/default.png`
+- `py/picts/crt/crt.png`
+- `py/picts/miscs/none.png`
 
 **Do not remove thoses files, at any cost !**
 
 ### Backgrounds
-The backgrounds size, in order to be selectable in the GUI list, must have the size of the output image, which means 460 x 595 px. You can name them as you want, they must be `PNG` files located at the `picts/backgrounds` folder.
+The backgrounds size, in order to be selectable in the GUI list, must have the size of the output image, which means 460 x 595 px. You can name them as you want, they must be `PNG` files located at the `py/picts/backgrounds` folder.
 
 ### Miscs
 The miscs items are just decorations to put behind the character. There is no specific restriction on it. You can take any size, but they still musts be `PNG` files.
