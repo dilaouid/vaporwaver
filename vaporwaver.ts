@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { spawn } from 'child_process';
 import * as fs from 'fs';
 
 const validGradients: string[] = [
@@ -86,6 +86,10 @@ export const vaporwaver = (flags: IFlag = defaultFlag) => {
     if (!fs.existsSync('./py/picts/backgrounds/' + flags.background + '.png'))
         throw new Error("Background path is not valid.");
 
+    // check if output path is not a valid pathlike or contains malicious characters
+    if (!flags.outputPath || flags.outputPath.toString().includes('..') || flags.outputPath.toString().includes('&'))
+        throw new Error("Output path is not valid.");
+
     // check if the path of character file exists
     if (!fs.existsSync(flags.characterPath))
         throw new Error("Character path is not valid.");
@@ -102,10 +106,6 @@ export const vaporwaver = (flags: IFlag = defaultFlag) => {
     // if misc is specified, check if it exists
     if (flags.misc && !fs.existsSync('./py/picts/miscs/' + flags.misc + '.png'))
         throw new Error("Misc path is not valid.");
-
-    // check if the output path is valid
-    /* if (flags.outputPath && !fs.existsSync(flags.outputPath))
-        throw new Error("Output path is not valid."); */
 
     // check if miscposx and miscposy are between -100 and 100
     if (flags.miscPosX && (flags.miscPosX < -100 || flags.miscPosX > 100))
@@ -147,7 +147,27 @@ export const vaporwaver = (flags: IFlag = defaultFlag) => {
 
     // execute a python script to generate the vaporwave image
     try {
-        execSync(`py ./py/vaporwaver.py -b="${flags.background}" -c="${flags.characterPath}" -m="${flags.misc || 'none'}" -mx="${flags.miscPosX || 0}" -my="${flags.miscPosY || 0}" -ms=${flags.miscScale || 100} -mr="${flags.miscRotate || 0}" -cx"=${flags.characterXPos || 0}" -cy="${flags.characterYPos || 0}" -cs="${flags.characterScale || 100}" -cr="${flags.characterRotate || 0}" -cg="${flags.characterGlitch || .1}" -cgs="${flags.characterGlitchSeed || 0}" -cgd="${flags.characterGradient || 'none'}" -crt=${flags.crt || false} -o="${flags.outputPath || './output/vaporwave.png'}"`);
+        const options = { timeout: 5000 };
+        const pyScript = `./py/vaporwaver.py`;
+        const pyScriptArgs = [
+        `-b=${flags.background}`,
+        `-c=${flags.characterPath}`,
+        `-m=${flags.misc || 'none'}`,
+        `-mx=${flags.miscPosX || 0}`,
+        `-my=${flags.miscPosY || 0}`,
+        `-ms=${flags.miscScale || 100}`,
+        `-mr=${flags.miscRotate || 0}`,
+        `-cx=${flags.characterXPos || 0}`,
+        `-cy=${flags.characterYPos || 0}`,
+        `-cs=${flags.characterScale || 100}`,
+        `-cr=${flags.characterRotate || 0}`,
+        `-cg=${flags.characterGlitch || .1}`,
+        `-cgs=${flags.characterGlitchSeed || 0}`,
+        `-cgd=${flags.characterGradient || 'none'}`,
+        `-crt=${flags.crt || false}`,
+        `-o=${flags.outputPath || './output/vaporwave.png'}`,
+        ];
+        spawn("py", [pyScript, ...pyScriptArgs], options);
     } catch (e: any) {
         throw new Error(e.stderr.toString());
     };
