@@ -83,7 +83,7 @@ const defaultFlag: DefaultValues = {
 
 export const vaporwaver = (flags: IFlag = defaultFlag) => {
     if (!flags.background) flags.background = "default";
-    if (!fs.existsSync('./py/picts/backgrounds/' + flags.background + '.png'))
+    if (!fs.existsSync('./picts/backgrounds/' + flags.background + '.png'))
         throw new Error("Background path is not valid.");
 
     // check if output path is not a valid pathlike or contains malicious characters
@@ -104,7 +104,7 @@ export const vaporwaver = (flags: IFlag = defaultFlag) => {
         throw new Error("Gradient is not valid.");
     
     // if misc is specified, check if it exists
-    if (flags.misc && !fs.existsSync('./py/picts/miscs/' + flags.misc + '.png'))
+    if (flags.misc && !fs.existsSync('./picts/miscs/' + flags.misc + '.png'))
         throw new Error("Misc path is not valid.");
 
     // check if miscposx and miscposy are between -100 and 100
@@ -148,7 +148,7 @@ export const vaporwaver = (flags: IFlag = defaultFlag) => {
     // execute a python script to generate the vaporwave image
     try {
         const options = { timeout: 5000 };
-        const pyScript = `./py/vaporwaver.py`;
+        const pyScript = `./vaporwaver.py`;
         const pyScriptArgs = [
         `-b=${flags.background}`,
         `-c=${flags.characterPath}`,
