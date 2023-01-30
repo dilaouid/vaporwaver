@@ -144,12 +144,12 @@ def rightFrame() -> None:
     gui["el"]["char"]["gradients"] = tk.OptionMenu(gui["frame"]["right"], gradient_var, *globals["gradients"], command=lambda x: gradientCharacter(x))
     gui["el"]["char"]["gradients"].grid(row=3, column=0)
 
-    gradient_label = tk.Label(gui["frame"]["right"], text="Glow", bg="#303030", fg="white")
-    gradient_label.grid(row=2, column=1)
-    gradient_var = tk.StringVar(gui["frame"]["right"])
-    gradient_var.set("none")
+    """ glow_label = tk.Label(gui["frame"]["right"], text="Glow", bg="#303030", fg="white")
+    glow_label.grid(row=2, column=1)
+    glow_var = tk.StringVar(gui["frame"]["right"])
+    glow_var.set("none")
     gui["el"]["char"]["glow"] = tk.OptionMenu(gui["frame"]["right"], gradient_var, *globals["glow"], command=lambda x: glowCharacter(x))
-    gui["el"]["char"]["glow"].grid(row=3, column=1)
+    gui["el"]["char"]["glow"].grid(row=3, column=1) """
 
     # Separator end of character edition
     separator = tk.Frame(gui["frame"]["right"], bg='white', width=200, height=1)
