@@ -11,7 +11,7 @@ A Python3 script to create vaporwave image based on PNG files. An improved versi
 - glitch-this (https://github.com/TotallyNotChase/glitch-this)
 - opencv-python
 
-You can install them with `pip install -r requirements.txt` after acceding to the `py` directory.
+You can install them with `pip install -r requirements.txt`.
 
 ![example](https://github.com/dilaouid/vaporwaver.py/blob/media/example.png)
 
@@ -37,20 +37,51 @@ And you can select one of the predefined background image. The output image will
 ⚠️ **WARNING** ⚠️
 
 For launching, this program needs three files in specific paths. They are already in the repository, but please do not rename nor delete them. You can replace their content tho.
-- `py/picts/backgrounds/default.png`
-- `py/picts/crt/crt.png`
-- `py/picts/miscs/none.png`
+- `picts/backgrounds/default.png`
+- `picts/crt/crt.png`
+- `picts/miscs/none.png`
 
 **Do not remove thoses files, at any cost !**
 
 ### Backgrounds
-The backgrounds size, in order to be selectable in the GUI list, must have the size of the output image, which means 460 x 595 px. You can name them as you want, they must be `PNG` files located at the `py/picts/backgrounds` folder.
+The backgrounds size, in order to be selectable in the GUI list, must have the size of the output image, which means 460 x 595 px. You can name them as you want, they must be `PNG` files located at the `picts/backgrounds` folder.
 
 ### Miscs
 The miscs items are just decorations to put behind the character. There is no specific restriction on it. You can take any size, but they still musts be `PNG` files.
 
 ## What does the program looks like ?
 ![screenshot](https://github.com/dilaouid/vaporwaver.py/blob/media/screenshot.png)
+
+## CLI mode
+You can also use this program with the CLI. Fill the correct arguments to create your vaporwavec image. You can have more informations with `py vaporwaver.py -h`
+Here is the correct usage:
+```
+usage: vaporwaver.py [-h] [-b background] [-m misc] [-mx miscPosX] [-my miscPosY] [-ms miscScale] [-mr miscRotate] [-c characterPath] [-cx characterXpos] [-cy characterYpos]
+                     [-cs characterScale] [-cr characterRotation] [-cg characterGlitch] [-cgs characterGlitchSeed] [-cgd characterGradient] [-cgl characterGlow] [-crt crt] [-o output]
+
+Vaporwave image editor
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -b                    Background image name for the vaporwaver render (without extension) in picts/backgrounds/ folder (default: default)
+  -m                    Misc image name for the vaporwaver render (without extension) in picts/miscs/ folder (default: none)
+  -mx                   Misc X position (default: 0) [-100, 100]
+  -my                   Misc Y position (default: 0) [-100, 100]
+  -ms                   Misc scale (default: 100) [1, 200]
+  -mr                   Misc rotation (default: 0) [-360, 360]
+  -c                    Character image path for the vaporwaver render (default: none) [REQUIRED]
+  -cx                   Character X position (default: 0) [-100, 100]
+  -cy                   Character Y position (default: 0) [-100, 100]
+  -cs                   Character scale (default: 100) [1, 200]
+  -cr                   Character rotation (default: 0) [-360, 360]
+  -cg                   Character glitch (default: 0.1) [0.1, 1]
+  -cgs                  Character glitch seed (default: 1) [0, 100]
+  -cgd                  Character gradient to apply, cvt colormap name (default: none) [none, autumn, bone, jet, winter, rainbow, ocean, summer, spring, cool, hsv, pink, hot, parula, magma, inferno, plasma, viridis, cividis, deepgreen]
+  -cgl                  Character glow to apply (default: none) [none, red, green, blue, yellow]
+  -crt                  CRT effect (default: False)
+  -o                    Output file name with path (default: output.png) PNG format only
+```
+
 
 # TypeScript usage
 Install the package with using the command `npm i vaporwaver-ts` and import the main package with
