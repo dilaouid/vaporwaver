@@ -1,5 +1,5 @@
 {
-  "name": "vaporwaver",
+  "name": "vaporwaver-ts",
   "version": "1.0.0",
   "description": "TypeScript version of the Vaporwaver Python library. Vaporwaver is a Python library for generating vaporwave image art.",
   "main": "vaporwaver.ts",
