@@ -2,9 +2,10 @@
 <p align="center"><i>Python version of existing <a target="_blank" href="https://github.com/dilaouid/vaporwaver">vaporwaver</a> PHP version</i></p>
 <hr>
 
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) [!NPM](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) [!TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) ![NPM](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
 
+# Python usage
 A Python3 script to create vaporwave image based on PNG files. An improved version of the PHP one I did 2 years ago. However, this time I used multiple third-party libraries, which are:
 - PIL (Pillow)
 - glitch-this (https://github.com/TotallyNotChase/glitch-this)
@@ -48,5 +49,59 @@ The backgrounds size, in order to be selectable in the GUI list, must have the s
 ### Miscs
 The miscs items are just decorations to put behind the character. There is no specific restriction on it. You can take any size, but they still musts be `PNG` files.
 
-# What does the program looks like ?
+## What does the program looks like ?
 ![screenshot](https://github.com/dilaouid/vaporwaver.py/blob/media/screenshot.png)
+
+# TypeScript usage
+Install the package with using the command `npm i vaporwaver-ts` and import the main package with
+```js
+import { vaporwaver } from "vaporwaver-ts";
+```
+
+The `vaporwaver()` function takes as parameter one object, `IFlags`, which should be configured like this:
+```ts
+interface IFlag {
+    // the background image of the vaporwave image
+    background?: string;
+    
+    // the misc image of the vaporwave image
+    misc?: string;
+    // the misc image's x position
+    miscPosX?: number;
+    // the misc image's y position
+    miscPosY?: number;
+    // the misc image's scale
+    miscScale?: number;
+    // the misc image's rotation
+    miscRotate?: number;
+
+    // the character image of the vaporwave image (required)
+    characterPath: string;
+    // the character image's x position
+    characterXPos?: Number;
+    // the character image's y position
+    characterYPos?: number;
+    // the character image's scale
+    characterScale?: number;
+    // the character image's rotation
+    characterRotate?: number;
+    // the character image's glitch value
+    characterGlitch?: number;
+    // the character image's glitch seed value
+    characterGlitchSeed?: number;
+    // the character image's gradient value accorded to cvt color gradients maps
+    characterGradient?: string;
+
+
+    // crt effect on the vaporwave image
+    crt?: boolean;
+
+    // output path of the vaporwave image
+    outputPath?: fs.PathLike;
+};
+```
+
+- `characterGradient` must be a valid predefined cv2 gradient colormap.
+- `misc` and `background` are not path, but name of the background and misc. For example, `neon` is a valid background, and `diamonds` is a valid misc.
+
+The function uses the CLI mode for the vaporwaver script, so the output is the same as the CLI mode.
