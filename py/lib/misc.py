@@ -1,9 +1,9 @@
-from data import globals, gui
+from data import globals, gui, path_finder
 from PIL import Image, ImageTk
 import tkinter as tk
 
 def changeMisc(filename: str) -> None:
-    globals["render"]["misc"] = 'picts/miscs/' + filename + '.png'
+    globals["render"]["misc"] = path_finder('picts/miscs/' + filename + '.png')
     misc: Image = tk.PhotoImage(file=globals["render"]["misc"])
     gui["frame"]["canvas"].misc = misc
     gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=misc)

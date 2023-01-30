@@ -3,23 +3,30 @@ import os
 import tkinter.messagebox
 from PIL import Image
 
+def path_finder(relative_path: str) -> str:
+    return os.path.dirname(os.path.realpath(__file__)) + '/' + relative_path
+
 def define(file: str, folderName: str) -> str:
-    if not os.path.exists("picts/" + folderName + "/" + file + ".png"):
+    # get the current path
+    path = path_finder("/picts/" + folderName + "/" + file + ".png")
+    if not os.path.exists(path):
         tkinter.messagebox.showerror("Error", "The " + folderName + " file '" + file + "' does not exist.")
         sys.exit()
-    return "picts/" + folderName + "/" + file + ".png"
+    return path
 
 def get_all_miscs() -> list:
     miscs = []
-    for file in os.listdir("picts/miscs"):
+    path = path_finder("picts/miscs/")
+    for file in os.listdir(path):
         if file.endswith(".png"):
             miscs.append(file[:-4])
     return miscs
 
 def get_all_backgrounds() -> list:
     backgrounds = []
-    for file in os.listdir("picts/backgrounds"):
-        if file.endswith(".png") and Image.open("picts/backgrounds/" + file).size == (460, 595):
+    path = path_finder("picts/backgrounds/")
+    for file in os.listdir(path):
+        if file.endswith(".png") and Image.open(path + file).size == (460, 595):
             backgrounds.append(file[:-4])
     return backgrounds
 

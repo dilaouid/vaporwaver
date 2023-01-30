@@ -1,5 +1,5 @@
 import os
-from data import globals, gui
+from data import globals, gui, path_finder
 from PIL import Image, ImageTk, ImageFilter
 from glitch_this import ImageGlitcher
 import cv2
@@ -16,8 +16,8 @@ def min_rotateCharacter(image):
 def glitchingCLI(image) -> Image:
     glitcher = ImageGlitcher()
     glitched_image = glitcher.glitch_image(image, color_offset=True, glitch_amount=float(globals["render"]["val"]["characterGlitch"]), seed=int(globals["render"]["val"]["characterGlitchSeed"]))
-    glitched_image.save('./tmp/char-cli.png')
-    return Image.open('./tmp/char-cli.png')
+    glitched_image.save(path_finder('./tmp/char-cli.png'))
+    return Image.open(path_finder('./tmp/char-cli.png'))
 
 def glitching(image) -> Image:
     glitcher = ImageGlitcher()
