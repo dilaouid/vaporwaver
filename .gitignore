@@ -2,3 +2,6 @@ __pycache__
 tmp/*.png
 dist/
 build/
+*.png
+node_modules/
+package-lock.json
