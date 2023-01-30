@@ -1,13 +1,15 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "module": "commonjs",
         "moduleResolution": "node",
-        "outDir": "distts",
+        "outDir": "dist",
         "rootDir": ".",
         "strict": true,
         "esModuleInterop": true,
-        "declaration": true
+        "declaration": true,
+        "allowJs": true,
+        "sourceMap": true
     },
-    "include": ["index.ts"],
+    "include": ["vaporwaver.ts"],
 }

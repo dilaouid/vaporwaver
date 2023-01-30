@@ -81,11 +81,9 @@ const defaultFlag: DefaultValues = {
     outputPath: "./output/vaporwave.png"
 };
 
-const vaporwaver = (flags: IFlag = defaultFlag) => {
-
-    // check if the background path is valid
+export const vaporwaver = (flags: IFlag = defaultFlag) => {
     if (!flags.background) flags.background = "default";
-    if (!fs.existsSync('./picts/backgrounds/' + flags.background + '.png'))
+    if (!fs.existsSync('./py/picts/backgrounds/' + flags.background + '.png'))
         throw new Error("Background path is not valid.");
 
     // check if the path of character file exists
@@ -102,16 +100,12 @@ const vaporwaver = (flags: IFlag = defaultFlag) => {
         throw new Error("Gradient is not valid.");
     
     // if misc is specified, check if it exists
-    if (flags.misc && !fs.existsSync('./picts/miscs' + flags.misc + '.png'))
+    if (flags.misc && !fs.existsSync('./py/picts/miscs/' + flags.misc + '.png'))
         throw new Error("Misc path is not valid.");
 
-    // if background is specified, check if it exists
-    if (flags.background && !fs.existsSync('./picts/backgrounds' + flags.background + '.png'))
-        throw new Error("Background path is not valid.");
-    
     // check if the output path is valid
-    if (flags.outputPath && !fs.existsSync(flags.outputPath))
-        throw new Error("Output path is not valid.");
+    /* if (flags.outputPath && !fs.existsSync(flags.outputPath))
+        throw new Error("Output path is not valid."); */
 
     // check if miscposx and miscposy are between -100 and 100
     if (flags.miscPosX && (flags.miscPosX < -100 || flags.miscPosX > 100))
@@ -153,28 +147,8 @@ const vaporwaver = (flags: IFlag = defaultFlag) => {
 
     // execute a python script to generate the vaporwave image
     try {
-        execSync(`python3 ./vaporwaver.py 
-            -b=${flags.background}
-            -c=${flags.characterPath}
-            -m=${flags.misc || ''}
-            -mx=${flags.miscPosX || 0}
-            -my=${flags.miscPosY || 0}
-            -ms=${flags.miscScale || 100}
-            -mr=${flags.miscRotate || 0}
-            -cx=${flags.characterXPos || 0}
-            -cy=${flags.characterYPos || 0}
-            -cs=${flags.characterScale || 100}
-            -cr=${flags.characterRotate || 0}
-            -cg=${flags.characterGlitch || .1}
-            -cgs=${flags.characterGlitchSeed || 0}
-            -cgd=${flags.characterGradient || 'none'}
-            -crt=${flags.crt || false}
-            -o=${flags.outputPath || './output/vaporwave.png'}`
-        );
+        execSync(`py ./py/vaporwaver.py -b="${flags.background}" -c="${flags.characterPath}" -m="${flags.misc || 'none'}" -mx="${flags.miscPosX || 0}" -my="${flags.miscPosY || 0}" -ms=${flags.miscScale || 100} -mr="${flags.miscRotate || 0}" -cx"=${flags.characterXPos || 0}" -cy="${flags.characterYPos || 0}" -cs="${flags.characterScale || 100}" -cr="${flags.characterRotate || 0}" -cg="${flags.characterGlitch || .1}" -cgs="${flags.characterGlitchSeed || 0}" -cgd="${flags.characterGradient || 'none'}" -crt=${flags.crt || false} -o="${flags.outputPath || './output/vaporwave.png'}"`);
     } catch (e: any) {
-        // throw an error if the python script fails to execute and print the error
         throw new Error(e.stderr.toString());
     };
 };
-
-export default vaporwaver;
