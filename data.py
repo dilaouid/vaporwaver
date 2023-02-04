@@ -112,7 +112,7 @@ gui = {
             "glitch": None,
             "glitchSeed": None,
             "gradients": None,
-            "glow": None
+            # "glow": None
         },
         "misc": {
             "posX": None,
