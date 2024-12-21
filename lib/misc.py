@@ -27,7 +27,7 @@ def scaleMisc(axis, value) -> None:
         return
     globals["render"]["val"]["miscScale"] = value
     image = Image.open(globals["render"]["misc"])
-    image = image.resize((int(image.size[0] * int(globals["render"]["val"]["miscScale"]) / 100), int(image.size[1] * int(globals["render"]["val"]["miscScale"]) / 100)), Image.ANTIALIAS)
+    image = image.resize((int(image.size[0] * int(globals["render"]["val"]["miscScale"]) / 100), int(image.size[1] * int(globals["render"]["val"]["miscScale"]) / 100)), Image.Resampling.LANCZOS)
     image = image.rotate(int(globals["render"]["val"]["miscRotate"]), expand=True)
     globals["gcMisc"] = ImageTk.PhotoImage(image)
     gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=globals["gcMisc"])
@@ -37,7 +37,7 @@ def rotateMisc(axis, value) -> None:
         return
     globals["render"]["val"]["miscRotate"] = value
     image = Image.open(globals["render"]["misc"])
-    image = image.resize((int(image.size[0] * int(globals["render"]["val"]["miscScale"]) / 100), int(image.size[1] * int(globals["render"]["val"]["miscScale"]) / 100)), Image.ANTIALIAS)
+    image = image.resize((int(image.size[0] * int(globals["render"]["val"]["miscScale"]) / 100), int(image.size[1] * int(globals["render"]["val"]["miscScale"]) / 100)), Image.Resampling.LANCZOS)
     image = image.rotate(int(globals["render"]["val"]["miscRotate"]), expand=True)
     globals["gcMisc"] = ImageTk.PhotoImage(image)
     gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=globals["gcMisc"])

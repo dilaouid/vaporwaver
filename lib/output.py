@@ -12,7 +12,7 @@ def outputPicture(cli: bool = False) -> None:
     # paste the misc image on the background image at the given position and given scale
     if globals["render"]["misc"] != path_finder("picts/miscs/none.png"):
         misc = Image.open(path_finder(globals["render"]["misc"]))
-        misc = misc.resize((int(misc.size[0] * int(globals["render"]["val"]["miscScale"]) / 100), int(misc.size[1] * int(globals["render"]["val"]["miscScale"]) / 100)), Image.ANTIALIAS)
+        misc = misc.resize((int(misc.size[0] * int(globals["render"]["val"]["miscScale"]) / 100), int(misc.size[1] * int(globals["render"]["val"]["miscScale"]) / 100)), Image.Resampling.LANCZOS)
         misc = misc.rotate(int(globals["render"]["val"]["miscRotate"]), expand=True)
         background.paste(misc, (int(background.size[0] * int(globals["render"]["val"]["miscPosX"]) / 100), int(background.size[1] * int(globals["render"]["val"]["miscPosY"]) / 100)), misc)
     # paste the character image if the file tmp/char.png exists
@@ -21,7 +21,7 @@ def outputPicture(cli: bool = False) -> None:
     else:
         # if the file tmp/char.png does not exist, paste the character image from the selected character with the given position and scale
         character = Image.open(globals["render"]["characterPath"])
-        character = character.resize((int(character.size[0] * int(globals["render"]["val"]["characterScale"]) / 100), int(character.size[1] * int(globals["render"]["val"]["characterScale"]) / 100)), Image.ANTIALIAS)
+        character = character.resize((int(character.size[0] * int(globals["render"]["val"]["characterScale"]) / 100), int(character.size[1] * int(globals["render"]["val"]["characterScale"]) / 100)), Image.Resampling.LANCZOS)
         character = character.rotate(int(globals["render"]["val"]["characterRotation"]), expand=True)
     if cli == False:
         background.paste(character, (int(background.size[0] * int(globals["render"]["val"]["characterXpos"]) / 100) - int(character.size[0] / 2), int(background.size[1] * int(globals["render"]["val"]["characterYpos"]) / 100) - int(character.size[1] / 2)), character)
