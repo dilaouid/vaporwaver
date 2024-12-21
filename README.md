@@ -1,4 +1,4 @@
-<h1 align="center">vaporwaver.py</h1>
+<h1 align="center">vaporwaver</h1>
 <p align="center"><i>Python version of existing <a target="_blank" href="https://github.com/dilaouid/vaporwaver">vaporwaver</a> PHP version</i></p>
 <hr>
 
