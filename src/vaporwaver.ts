@@ -139,9 +139,9 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         // Prepare Python arguments
         const pyArgs = [
             pyScript,
-            `-b=${flags.background || 'default'}`,
+            `-b=${bgPath}`,
             `-c=${flags.characterPath}`,
-            `-m=${flags.misc || 'none'}`,
+            `-m=${miscPath}`,
             `-mx=${flags.miscPosX ?? 0}`,
             `-my=${flags.miscPosY ?? 0}`,
             `-ms=${flags.miscScale ?? 100}`,
@@ -161,7 +161,13 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
 
         // Execute Python script
         return new Promise((resolve, reject) => {
-            const pythonProcess = spawn('python', pyArgs);
+            const pythonProcess = spawn('python', pyArgs, {
+                env: {
+                    ...process.env,
+                    PYTHONPATH: rootPath
+                }
+            });
+
             let stderrData = '';
 
             pythonProcess.stdout.on('data', (data: Buffer) => {

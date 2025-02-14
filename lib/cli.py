@@ -103,11 +103,15 @@ def apply_args():
     type_mapping = { "int": int, "float": float, "str": str, "bool": bool }
     flags["characterPath"]["type"] = "str"
     for c in flags:
-        parser.add_argument(flags[c]["flag"], type=type_mapping[flags[c]["type"]], default=flags[c]["value"], help=flags[c]["description"], dest=c, metavar=c)
+        parser.add_argument(flags[c]["flag"], type=type_mapping[flags[c]["type"]], 
+                          default=flags[c]["value"], help=flags[c]["description"], 
+                          dest=c, metavar=c)
+
+    if os.path.exists("tmp/char.png"):
+        os.remove("tmp/char.png")
+
     args = parser.parse_args()
     for c in flags:
-        if os.path.exists("tmp/char.png"):
-            os.remove("tmp/char.png")
         if c == "output" and getattr(args, c) is not None:
             if not getattr(args, c).endswith(".png"):
                 sys.stderr.write("Error: The output file must be a png")
@@ -131,7 +135,22 @@ def apply_args():
                 if globals["render"]["val"][c] < start_value or globals["render"]["val"][c] > end_value:
                     sys.stderr.write(f"Error: {c} must be in {flags[c]['range']}")
                     sys.exit(1)
-            elif (flags[c]["range"] is not None) and ((globals["render"]["val"][c] not in flags[c]["range"]) and (globals["render"]["val"][c] not in range(flags[c]["range"][0], flags[c]["range"][1] + 1))):
+            elif (flags[c]["range"] is not None and 
+                  ((globals["render"]["val"][c] not in flags[c]["range"]) and 
+                   (globals["render"]["val"][c] not in range(flags[c]["range"][0], flags[c]["range"][1] + 1)))):
                 sys.stderr.write(f"Error: {c} must be in {flags[c]['range']}")
                 sys.exit(1)
+
+    if not os.path.isfile(globals["render"]["background"]):
+        sys.stderr.write(f"Error: Background file not found: {globals['render']['background']}")
+        sys.exit(1)
+        
+    if globals["render"]["misc"] != "none" and not os.path.isfile(globals["render"]["misc"]):
+        sys.stderr.write(f"Error: Misc file not found: {globals['render']['misc']}")
+        sys.exit(1)
+        
+    if not os.path.isfile(globals["render"]["val"]["characterPath"]):
+        sys.stderr.write(f"Error: Character file not found: {globals['render']['val']['characterPath']}")
+        sys.exit(1)
+
     outputPicture(True)
