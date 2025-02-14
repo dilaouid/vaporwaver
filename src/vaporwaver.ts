@@ -61,13 +61,13 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         await DependencyChecker.checkPython();
         await DependencyChecker.checkPythonDependencies();
 
-        const rootPath = dirname(fileURLToPath(import.meta.url));
+        const rootPath = join(dirname(fileURLToPath(import.meta.url)), '..');
 
         // Validate paths and files
         const bgPath = typeof flags.background === 'string' && !flags.background.includes(path.sep) 
             ? join(rootPath, 'picts', 'backgrounds', `${flags.background}.png`)
             : flags.background || join(rootPath, 'picts', 'backgrounds', 'default.png');
-
+            
         const miscPath = typeof flags.misc === 'string' && !flags.misc.includes(path.sep)
             ? join(rootPath, 'picts', 'miscs', `${flags.misc}.png`)
             : flags.misc || join(rootPath, 'picts', 'miscs', 'none.png');

@@ -9,3 +9,14 @@
   "details": {},
   "name": "VaporwaverError"
 }
+[2025-02-14T09:21:01.369Z] INFO: Starting vaporwaver process
+{
+  "flags": {
+    "characterPath": "nonexistent.png"
+  }
+}
+[2025-02-14T09:21:02.976Z] ERROR: Vaporwaver error:
+{
+  "details": {},
+  "name": "VaporwaverError"
+}
