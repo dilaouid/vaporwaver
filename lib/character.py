@@ -15,9 +15,18 @@ def min_rotateCharacter(image):
 
 def glitchingCLI(image) -> Image:
     glitcher = ImageGlitcher()
-    glitched_image = glitcher.glitch_image(image, color_offset=True, glitch_amount=float(globals["render"]["val"]["characterGlitch"]), seed=int(globals["render"]["val"]["characterGlitchSeed"]))
-    glitched_image.save(path_finder('./tmp/char-cli.png'))
-    return Image.open(path_finder('./tmp/char-cli.png'))
+    try:
+        glitched_image = glitcher.glitch_image(
+            image, 
+            color_offset=True, 
+            glitch_amount=float(globals["render"]["val"]["characterGlitch"]), 
+            seed=int(globals["render"]["val"]["characterGlitchSeed"])
+        )
+        glitched_image.save(path_finder('./tmp/char-cli.png'), 'PNG')
+        return glitched_image
+    except Exception as e:
+        print(f"Error in glitchingCLI: {e}")
+        return image
 
 def glitching(image) -> Image:
     glitcher = ImageGlitcher()
