@@ -1,7 +1,4 @@
 import { spawn } from "child_process";
-import { existsSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
 
 export class DependencyError extends Error {
     constructor(message: string, public readonly details: any = {}) {
@@ -133,7 +130,7 @@ export class DependencyChecker {
     }
 
     private static isVersionSatisfied(current: string, required: string): boolean {
-        const parseVersion = (v: string) => v.split('.').map(Number);
+        const parseVersion = (v: string): number[] => v.split('.').map(Number);
         const [currentMajor, currentMinor, currentPatch] = parseVersion(current);
         const [reqMajor, reqMinor, reqPatch] = parseVersion(required);
 
