@@ -1,0 +1,25 @@
+# Source
+src/
+tests/
+coverage/
+
+# Config files
+.eslintrc
+.prettierrc
+jest.config.js
+tsconfig.json
+.github/
+.vscode/
+.idea/
+
+# Dev files
+*.test.ts
+*.spec.ts
+.gitignore
+.travis.yml
+.editorconfig
+
+# Logs
+*.log
+logs/
+tmp/

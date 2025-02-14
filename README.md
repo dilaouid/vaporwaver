@@ -84,55 +84,120 @@ optional arguments:
 
 
 # TypeScript usage
-Install the package with using the command `npm i vaporwaver-ts` and import the main package with
-```js
+
+Install the package using either npm or pnpm:
+```bash
+npm install vaporwaver-ts
+# or
+pnpm install vaporwaver-ts
+```
+
+The package will automatically attempt to install the required Python dependencies during installation. You can manually check the dependencies by running:
+```bash
+npx check-vaporwaver
+```
+
+Import and use the package:
+```typescript
 import { vaporwaver } from "vaporwaver-ts";
+
+// Example usage
+await vaporwaver({
+    background: "neon",          // One of the predefined backgrounds in picts/backgrounds/
+    misc: "diamonds",           // One of the predefined misc items in picts/miscs/
+    characterPath: "./my-character.png",  // Path to your character PNG file
+    characterGradient: "plasma", // Optional: apply a gradient effect
+    outputPath: "./output.png"  // Where to save the result
+});
 ```
 
-The `vaporwaver()` function takes as parameter one object, `IFlags`, which should be configured like this:
-```ts
+## Configuration (IFlag interface)
+```typescript
 interface IFlag {
-    // the background image of the vaporwave image
-    background?: string;
-    
-    // the misc image of the vaporwave image
-    misc?: string;
-    // the misc image's x position
-    miscPosX?: number;
-    // the misc image's y position
-    miscPosY?: number;
-    // the misc image's scale
-    miscScale?: number;
-    // the misc image's rotation
-    miscRotate?: number;
-
-    // the character image of the vaporwave image (required)
-    characterPath: string;
-    // the character image's x position
-    characterXPos?: Number;
-    // the character image's y position
-    characterYPos?: number;
-    // the character image's scale
-    characterScale?: number;
-    // the character image's rotation
-    characterRotate?: number;
-    // the character image's glitch value
-    characterGlitch?: number;
-    // the character image's glitch seed value
-    characterGlitchSeed?: number;
-    // the character image's gradient value accorded to cvt color gradients maps
-    characterGradient?: string;
-
-
-    // crt effect on the vaporwave image
-    crt?: boolean;
-
-    // output path of the vaporwave image
-    outputPath?: fs.PathLike;
-};
+    background?: string;        // Name of background file (without .png) from picts/backgrounds/
+    misc?: string;             // Name of misc file (without .png) from picts/miscs/
+    miscPosX?: number;         // [-100, 100] X position of misc
+    miscPosY?: number;         // [-100, 100] Y position of misc
+    miscScale?: number;        // [1, 200] Scale of misc
+    miscRotate?: number;       // [-360, 360] Rotation of misc
+    characterPath: string;     // Path to character PNG file (required)
+    characterXPos?: number;    // [-100, 100] X position of character
+    characterYPos?: number;    // [-100, 100] Y position of character
+    characterScale?: number;   // [1, 200] Scale of character
+    characterRotate?: number;  // [-360, 360] Rotation of character
+    characterGlitch?: number;  // [0.1, 10] Glitch effect intensity
+    characterGlitchSeed?: number; // [0, 100] Seed for glitch effect
+    characterGradient?: GradientType; // Predefined gradient type
+    crt?: boolean;            // Apply CRT effect
+    outputPath?: string;      // Output file path (PNG)
+}
 ```
 
-- `characterGradient` must be a valid predefined cv2 gradient colormap.
-- `misc` and `background` are not path, but name of the background and misc. For example, `neon` is a valid background, and `diamonds` is a valid misc.
+## Available gradients
+The following gradient types are available for `characterGradient`:
+- none, autumn, bone, jet, winter, rainbow, ocean
+- summer, spring, cool, hsv, pink, hot, parula
+- magma, inferno, plasma, viridis, cividis, deepgreen
 
-The function uses the CLI mode for the vaporwaver script, so the output is the same as the CLI mode.
+## Requirements
+- Node.js ≥ 14.0.0
+- Python ≥ 3.7.0
+
+## Debug Mode
+Set `VAPORWAVER_DEBUG=true` environment variable to enable debug logging.
+
+## Error Handling
+The library now includes comprehensive error handling:
+- VaporwaverError: Custom error class with detailed error information
+- Validation errors for all input parameters
+- PNG file validation
+- Path security checks
+
+## Logging
+Logs are stored in the `logs` directory by default:
+- INFO: General operation information
+- WARN: Non-critical warnings
+- ERROR: Critical errors
+- DEBUG: Detailed debug information (when debug mode is enabled)
+
+## Development
+```bash
+# Install dependencies
+npm install
+
+# Build
+npm run build
+
+# Run tests
+npm run test
+
+# Check Python dependencies
+npm run check-deps
+
+# Format code
+npm run format
+
+# Lint code
+npm run lint
+```
+
+## Troubleshooting
+Common issues and solutions:
+
+1. Python dependency installation fails
+    - Try running pip install --user -r requirements.txt
+    - Check Python version (>= 3.7.0 required)
+
+
+2. File not found errors
+    - Ensure all required files exist in the correct directories
+    - Check file permissions
+
+
+3. PNG validation fails
+
+    - Ensure input files are valid PNG format
+    - Check file permissions
+
+
+
