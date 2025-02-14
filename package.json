@@ -17,7 +17,7 @@
     "check-deps": "node dist/utils/dependency-checker.js",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepublishOnly": "npm run lint && npm run test && npm run build"
@@ -29,7 +29,7 @@
     "picts",
     "lib",
     "requirements.txt",
-    "logs" 
+    "logs"
   ],
   "repository": {
     "type": "git",
@@ -53,6 +53,7 @@
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.38.0",
     "jest": "^29.5.0",
     "prettier": "^2.8.7",
