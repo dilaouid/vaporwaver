@@ -107,10 +107,10 @@ def apply_args():
                           default=flags[c]["value"], help=flags[c]["description"], 
                           dest=c, metavar=c)
 
+    args = parser.parse_args()
     if os.path.exists("tmp/char.png"):
         os.remove("tmp/char.png")
 
-    args = parser.parse_args()
     for c in flags:
         if c == "output" and getattr(args, c) is not None:
             if not getattr(args, c).endswith(".png"):
@@ -119,17 +119,37 @@ def apply_args():
         if c == "characterPath" and getattr(args, c) is None:
             sys.stderr.write("Error: characterPath is required")
             sys.exit(1)
+
+        value = getattr(args, c)
+
         if c in globals["render"]:
-            globals["render"][c] = getattr(args, c)
-            if (flags[c]["range"] is not None) and ((globals["render"][c] not in flags[c]["range"]) and (globals["render"][c] not in range(flags[c]["range"][0], flags[c]["range"][1] + 1))):
+            if c == "background":
+                bg_name = value if value != 'default' else 'default'
+                bg_path = os.path.join('picts', 'backgrounds', f'{bg_name}.png')
+                if not os.path.isfile(bg_path):
+                    sys.stderr.write(f"Error: Background file not found: {bg_path}")
+                    sys.exit(1)
+                globals["render"][c] = bg_path
+
+            elif c == "misc":
+                misc_name = value if value != 'none' else 'none'
+                misc_path = os.path.join('picts', 'miscs', f'{misc_name}.png')
+                if not os.path.isfile(misc_path):
+                    sys.stderr.write(f"Error: Misc file not found: {misc_path}")
+                    sys.exit(1)
+                globals["render"][c] = misc_path
+            else:
+                globals["render"][c] = value
+                
+            if (flags[c]["range"] is not None and 
+                c not in ["background", "misc"] and
+                ((globals["render"][c] not in flags[c]["range"]) and 
+                 (globals["render"][c] not in range(flags[c]["range"][0], flags[c]["range"][1] + 1)))):
                 sys.stderr.write(f"Error: {c} must be in {flags[c]['range']}")
                 sys.exit(1)
-            if c == "background" and getattr(args, c) is not None:
-                globals["render"]["background"] = 'picts/backgrounds/' + getattr(args, c) + '.png'
-            elif c == "misc" and getattr(args, c) is not None:
-                globals["render"]["misc"] = 'picts/miscs/' + getattr(args, c) + '.png'
         else:
-            globals["render"]["val"][c] = getattr(args, c)
+            globals["render"]["val"][c] = value
+            
             if c == "characterGlitch":
                 start_value, end_value = flags[c]["range"]
                 if globals["render"]["val"][c] < start_value or globals["render"]["val"][c] > end_value:
