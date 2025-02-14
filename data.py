@@ -4,8 +4,9 @@ import tkinter.messagebox
 from PIL import Image
 
 def path_finder(relative_path: str) -> str:
-    return relative_path # keep this line for the build
+    # return relative_path # keep this line for the build
     # return os.path.dirname(os.path.realpath(__file__)) + '/' + relative_path
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), relative_path)
 
 def define(file: str, folderName: str) -> str:
     # get the current path
@@ -127,3 +128,6 @@ gui = {
         }
     }
 }
+
+def get_temp_file(name: str) -> str:
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tmp', f"{name}_{globals.get('temp_suffix', 'default')}.png")

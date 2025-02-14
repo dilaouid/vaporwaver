@@ -1,9 +1,12 @@
-import os, sys
+import os, sys, uuid
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from gui.window import configureWindow
 from gui.editor import leftFrame, rightFrame
+
 from data import globals
+globals["temp_suffix"] = uuid.uuid4().hex
+
 from lib.cli import apply_args
 
 os.makedirs(os.path.join(os.path.dirname(__file__), 'tmp'), exist_ok=True)
@@ -17,11 +20,10 @@ else:
     leftFrame()
     rightFrame()
     def closeWindow():
-        if os.path.exists("tmp/char.png"):
-            os.remove("tmp/char.png")
+        temp_char = os.path.join("tmp", f"char_{globals['temp_suffix']}.png")
+        if os.path.exists(temp_char):
+            os.remove(temp_char)
         globals["window"].destroy()
 
     globals["window"].protocol("WM_DELETE_WINDOW", closeWindow)
-
-    # run the main loop
     globals["window"].mainloop()

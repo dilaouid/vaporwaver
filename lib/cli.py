@@ -1,5 +1,5 @@
 import sys, os
-from data import globals
+from data import globals, get_temp_file
 import argparse
 
 from lib.output import outputPicture
@@ -115,8 +115,9 @@ def apply_args():
     args = parser.parse_args()
     
     # Nettoyage des fichiers temporaires
-    if os.path.exists("tmp/char.png"):
-        os.remove("tmp/char.png")
+    temp_char = get_temp_file("char")
+    if os.path.exists(temp_char):
+        os.remove(temp_char)
     
     for c in flags:
         value = getattr(args, c)
