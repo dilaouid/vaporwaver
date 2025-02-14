@@ -4,6 +4,12 @@
   "description": "TypeScript version of the Vaporwaver Python library. Vaporwaver is a Python library for generating vaporwave image art.",
   "main": "dist/vaporwaver.js",
   "types": "dist/vaporwaver.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/vaporwaver.js",
+      "types": "./dist/vaporwaver.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
@@ -11,7 +17,7 @@
     "check-deps": "node dist/utils/dependency-checker.js",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepublishOnly": "npm run lint && npm run test && npm run build"
@@ -59,6 +65,6 @@
     "python": ">=3.7.0"
   },
   "bin": {
-    "check-vaporwaver": "./scripts/check-dependencies.js"
+    "check-vaporwaver": "./dist/utils/dependency-checker.js"
   }
 }

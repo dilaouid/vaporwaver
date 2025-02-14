@@ -74,7 +74,7 @@ export class DependencyChecker {
             let output = '';
 
             pip.stdout.on('data', (data) => { output += data; });
-            pip.stderr.on('data', (data) => { /* ignore stderr */ });
+            pip.stderr.on('data', () => { /* ignore stderr */ });
 
             pip.on('close', (code) => {
                 if (code === 0) {
