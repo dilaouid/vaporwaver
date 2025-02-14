@@ -26,12 +26,20 @@ def glitching(image) -> Image:
     return ImageTk.PhotoImage(glitched_image)
 
 def applygradient(path: str = './tmp/char.png'):
-    image = cv2.imread(globals["render"]["characterPath"], cv2.IMREAD_UNCHANGED)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    image = cv2.applyColorMap(image, getattr(cv2, "COLORMAP_" + globals["render"]["val"]["characterGradient"].upper()))
-    image = cv2.cvtColor(image, cv2.COLOR_RGBA2BGRA)
-    image[:, :, 3] = cv2.imread(globals["render"]["characterPath"], cv2.IMREAD_UNCHANGED)[:, :, 3]
-    image = Image.fromarray(image)
+    original = cv2.imread(globals["render"]["val"]["characterPath"], cv2.IMREAD_UNCHANGED)
+    if original is None:
+        raise ValueError("Impossible de lire l'image du personnage.")
+
+    if original.shape[2] < 4:
+        alpha = 255 * np.ones((original.shape[0], original.shape[1], 1), dtype=original.dtype)
+        original = np.concatenate((original, alpha), axis=2)
+
+    gray = cv2.cvtColor(original, cv2.COLOR_BGR2GRAY)
+    colored = cv2.applyColorMap(gray, getattr(cv2, "COLORMAP_" + globals["render"]["val"]["characterGradient"].upper()))
+    colored = cv2.cvtColor(colored, cv2.COLOR_BGR2BGRA)
+    colored[:, :, 3] = original[:, :, 3]
+
+    image = Image.fromarray(colored)
     image = resizeCharacter(image)
     image = min_rotateCharacter(image)
     image.save(path)
@@ -86,7 +94,7 @@ def scaleCharacter(axis, value) -> None:
         return
     globals["render"]["val"]["characterScale"] = value
     image: Image = resizeAndUpdate()
-    globals["gcChar"]: Image = glitching(image)
+    globals["gcChar"] = glitching(image)
     gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
 
 def glitchCharacter(axis, value) -> None:
