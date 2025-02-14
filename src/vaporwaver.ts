@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 import { existsSync, promises as fs } from 'fs';
-import { join, dirname, extname } from 'path';
+import path, { join, dirname, extname } from 'path';
 import { fileURLToPath } from 'url';
 import type { PathLike } from 'fs';
 import { DependencyChecker } from './utils/dependency-checker';
@@ -15,8 +15,8 @@ export const validGradients = [
 export type GradientType = typeof validGradients[number];
 
 export interface IFlag {
-    background?: string;
-    misc?: string;
+    background?: string | PathLike;
+    misc?: string | PathLike;
     miscPosX?: number;
     miscPosY?: number;
     miscScale?: number;
@@ -64,8 +64,14 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         const rootPath = dirname(fileURLToPath(import.meta.url));
 
         // Validate paths and files
-        const bgPath = join(rootPath, 'picts', 'backgrounds', `${flags.background || 'default'}.png`);
-        const miscPath = flags.misc ? join(rootPath, 'picts', 'miscs', `${flags.misc}.png`) : null;
+        const bgPath = typeof flags.background === 'string' && !flags.background.includes(path.sep) 
+            ? join(rootPath, 'picts', 'backgrounds', `${flags.background}.png`)
+            : flags.background || join(rootPath, 'picts', 'backgrounds', 'default.png');
+
+        const miscPath = typeof flags.misc === 'string' && !flags.misc.includes(path.sep)
+            ? join(rootPath, 'picts', 'miscs', `${flags.misc}.png`)
+            : flags.misc || join(rootPath, 'picts', 'miscs', 'none.png');
+
         const pyScript = join(rootPath, 'vaporwaver.py');
 
         // Validate required files
@@ -83,7 +89,7 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
             if (!existsSync(file.path)) {
                 throw new VaporwaverError(`${file.name} file not found: ${file.path}`);
             }
-            if (file.path.endsWith('.png') && !await isValidPngFile(file.path)) {
+            if (file.path.toString().endsWith('.png') && !await isValidPngFile(file.path.toString())) {
                 throw new VaporwaverError(`Invalid PNG file: ${file.path}`);
             }
         }
