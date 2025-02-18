@@ -31,6 +31,7 @@ export interface IFlag {
     characterGradient?: GradientType;
     crt?: boolean;
     outputPath?: PathLike;
+    characterOnly?: boolean;
 }
 
 export class VaporwaverError extends Error {
@@ -74,15 +75,18 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
 
         const pyScript = join(rootPath, 'vaporwaver.py');
 
-        // Validate required files
-        const requiredFiles = [
-            { path: bgPath, name: 'Background' },
+        // Validate required files - if characterOnly is true, we only need to validate character path
+        const requiredFiles: Array<{ path: PathLike, name: string }> = [
             { path: flags.characterPath, name: 'Character' },
             { path: pyScript, name: 'Python script' }
         ];
 
-        if (miscPath && flags.misc !== 'none') {
-            requiredFiles.push({ path: miscPath, name: 'Misc' });
+        // Only validate background and misc if we're not in characterOnly mode
+        if (!flags.characterOnly) {
+            requiredFiles.push({ path: bgPath, name: 'Background' });
+            if (miscPath && flags.misc !== 'none') {
+                requiredFiles.push({ path: miscPath, name: 'Misc' });
+            }
         }
 
         for (const file of requiredFiles) {
@@ -139,13 +143,7 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         // Prepare Python arguments
         const pyArgs = [
             pyScript,
-            `-b=${typeof flags.background === 'string' ? flags.background : 'default'}`,
             `-c=${flags.characterPath}`,
-            `-m=${typeof flags.misc === 'string' ? flags.misc : 'none'}`,
-            `-mx=${flags.miscPosX ?? 0}`,
-            `-my=${flags.miscPosY ?? 0}`,
-            `-ms=${flags.miscScale ?? 100}`,
-            `-mr=${flags.miscRotate ?? 0}`,
             `-cx=${flags.characterXPos ?? 0}`,
             `-cy=${flags.characterYPos ?? 0}`,
             `-cs=${flags.characterScale ?? 100}`,
@@ -153,9 +151,24 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
             `-cg=${flags.characterGlitch ?? 0.1}`,
             `-cgs=${flags.characterGlitchSeed ?? 0}`,
             `-cgd=${flags.characterGradient?.toLowerCase() ?? 'none'}`,
-            `-crt=${flags.crt ?? false}`,
             `-o=${flags.outputPath ?? join(rootPath, 'tmp', 'output.png')}`
         ];
+
+        // Add the character-only flag if specified
+        if (flags.characterOnly) {
+            pyArgs.push('--character-only');
+        } else {
+            // Only add these arguments if we're not in characterOnly mode
+            pyArgs.push(
+                `-b=${typeof flags.background === 'string' ? flags.background : 'default'}`,
+                `-m=${typeof flags.misc === 'string' ? flags.misc : 'none'}`,
+                `-mx=${flags.miscPosX ?? 0}`,
+                `-my=${flags.miscPosY ?? 0}`,
+                `-ms=${flags.miscScale ?? 100}`,
+                `-mr=${flags.miscRotate ?? 0}`,
+                `-crt=${flags.crt ?? false}`
+            );
+        }
 
         logger.debug('Executing Python script with args:', { pyArgs });
 

@@ -53,6 +53,11 @@ def outputPicture(cli: bool = False) -> None:
                 defaultextension=".png",
                 initialfile="vaporwaved.png"
             )
+            # Si l'utilisateur annule la sauvegarde, sortir de la fonction
+            if not path_save:
+                return
+            # CORRECTION ICI: Utiliser path_save comme chemin de sauvegarde
+            globals["render"]["output"] = path_save
         else:
             if globals["render"]["val"]["characterGradient"] != "none":
                 working_character = applygradient(get_temp_file("char-cli"))
@@ -85,6 +90,12 @@ def outputPicture(cli: bool = False) -> None:
             crt = Image.open(path_finder("picts/crt/crt.png"))
             background.paste(crt, (0, 0), crt)
         
+        # Vérifier que le chemin de sortie a une extension valide
+        if not globals["render"]["output"] or not os.path.splitext(globals["render"]["output"])[1]:
+            print("Erreur: Chemin de sortie invalide ou sans extension")
+            return
+            
+        print(f"Saving to {globals['render']['output']}")
         background.save(globals["render"]["output"])
         # Nettoyage
         temp_cli = get_temp_file("char-cli")

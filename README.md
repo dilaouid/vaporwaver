@@ -109,6 +109,15 @@ await vaporwaver({
     characterGradient: "plasma", // Optional: apply a gradient effect
     outputPath: "./output.png"  // Where to save the result
 });
+
+// Export only the character with effects (no background or misc items)
+await vaporwaver({
+    characterPath: "./my-character.png",
+    characterGradient: "plasma",
+    characterGlitch: 2.5,
+    characterOnly: true,         // Export only the character with applied effects
+    outputPath: "./character-only.png"
+});
 ```
 
 ## Configuration (IFlag interface)
@@ -130,6 +139,7 @@ interface IFlag {
     characterGradient?: GradientType; // Predefined gradient type
     crt?: boolean;            // Apply CRT effect
     outputPath?: string;      // Output file path (PNG)
+    characterOnly?: boolean;  // Export only the character with effects (no background/misc)
 }
 ```
 
@@ -195,9 +205,5 @@ Common issues and solutions:
 
 
 3. PNG validation fails
-
     - Ensure input files are valid PNG format
     - Check file permissions
-
-
-
