@@ -114,7 +114,7 @@ flags = {
 }
 
 def export_character_only(output_path):
-    """Exporte uniquement le personnage avec ses effets (gradient, glitch, rotation)"""
+    """Exporte uniquement le personnage avec ses effets (gradient, glitch)"""
     try:
         # Charger l'image originale
         original_image = Image.open(globals["render"]["val"]["characterPath"])
@@ -126,6 +126,7 @@ def export_character_only(output_path):
             image = prepareGradientImage(original_image)
         else:
             image = original_image.copy()
+
         # Glitch si nécessaire
         if globals["render"]["val"]["characterGlitch"] != .1:
             image = applyGlitchEffect(image)
@@ -149,7 +150,6 @@ def apply_args():
 
     for c in flags:
         if flags[c]["type"] == "bool":
-            # Pour les booléens, utiliser action='store_true' au lieu d'un type
             parser.add_argument(flags[c]["flag"], action='store_true',
                               default=flags[c]["value"], help=flags[c]["description"], 
                               dest=c)
@@ -159,86 +159,91 @@ def apply_args():
                               dest=c, metavar=c)
 
     args = parser.parse_args()
-
-    # Nettoyage des fichiers temporaires
-    temp_char = get_temp_file("char")
-    if os.path.exists(temp_char):
-        os.remove(temp_char)
-
-    for c in flags:
-        value = getattr(args, c)
-
-        if c == "characterPath":
-            if value is None:
-                sys.stderr.write("Error: characterPath is required\n")
-                sys.exit(1)
-            globals["render"]["val"]["characterPath"] = value
-            if not os.path.isfile(value):
-                sys.stderr.write(f"Error: Character file not found: {value}\n")
-                sys.exit(1)
-
-        elif c == "output" and value is not None:
-            if not value.endswith(".png"):
-                sys.stderr.write("Error: The output file must be a png\n")
-                sys.exit(1)
-            globals["render"]["output"] = value
-        elif c == "background":
-            bg_name = value if value != 'default' else 'default'
-            bg_path = os.path.join('picts', 'backgrounds', f'{bg_name}.png')
-            if not os.path.isfile(bg_path):
-                sys.stderr.write(f"Error: Background file not found: {bg_path}\n")
-                sys.exit(1)
-            globals["render"]["background"] = bg_path
-        elif c == "misc":
-            misc_name = value if value != 'none' else 'none'
-            misc_path = os.path.join('picts', 'miscs', f'{misc_name}.png')
-            if not os.path.isfile(misc_path):
-                sys.stderr.write(f"Error: Misc file not found: {misc_path}\n")
-                sys.exit(1)
-            globals["render"]["misc"] = misc_path
-        elif c == "characterOnly":
-            # Stockage de l'option characterOnly pour utilisation ultérieure
-            globals["render"]["characterOnly"] = value
-        else:
-            param_name = c
-            if c in ["characterXpos", "characterYpos", "characterScale", 
-                    "characterRotation", "characterGlitch", "characterGlitchSeed",
-                    "characterGradient", "characterGlow", "miscPosX", "miscPosY",
-                    "miscScale", "miscRotate", "crt"]:
-                globals["render"]["val"][param_name] = value
-                
-                # Validation des ranges
-                if flags[c]["range"] is not None:
-                    if c == "characterGlitch":
-                        start_value, end_value = flags[c]["range"]
-                        if value < start_value or value > end_value:
-                            sys.stderr.write(f"Error: {c} must be in {flags[c]['range']}\n")
-                            sys.exit(1)
-                    elif c in ["characterGradient", "characterGlow"]:
-                        if value not in flags[c]["range"]:
-                            sys.stderr.write(f"Error: {c} must be in {flags[c]['range']}\n")
-                            sys.exit(1)
-                    elif ((value not in flags[c]["range"]) and 
-                          (value not in range(flags[c]["range"][0], flags[c]["range"][1] + 1))):
-                        sys.stderr.write(f"Error: {c} must be in {flags[c]['range']}\n")
-                        sys.exit(1)
-
-    if not os.path.isfile(globals["render"]["val"]["characterPath"]):
-        sys.stderr.write(f"Error: Character file not found: {globals['render']['val']['characterPath']}\n")
+    
+    characterOnly = getattr(args, "characterOnly", False)
+    globals["render"]["characterOnly"] = characterOnly
+    
+    # Définir quels paramètres sont nécessaires en mode characterOnly
+    value = getattr(args, "characterPath")
+    if value is None:
+        sys.stderr.write("Error: characterPath is required\n")
         sys.exit(1)
-
-    # Si l'option characterOnly est activée, traiter différemment
+    globals["render"]["val"]["characterPath"] = value
+    if not os.path.isfile(value):
+        sys.stderr.write(f"Error: Character file not found: {value}\n")
+        sys.exit(1)
+    
+    # Gérer output
+    value = getattr(args, "output", None)
+    if value is not None:
+        if not value.endswith(".png"):
+            sys.stderr.write("Error: The output file must be a png\n")
+            sys.exit(1)
+        globals["render"]["output"] = value
+    
+    # Traiter les paramètres d'effet (toujours)
+    for param in ["characterGlitch", "characterGlitchSeed", "characterGradient"]:
+        value = getattr(args, param, None)
+        if value is not None:
+            globals["render"]["val"][param] = value
+            
+            # Validation si nécessaire
+            if flags[param]["range"] is not None:
+                if param == "characterGlitch":
+                    start_value, end_value = flags[param]["range"]
+                    if value < start_value or value > end_value:
+                        sys.stderr.write(f"Error: {param} must be in {flags[param]['range']}\n")
+                        sys.exit(1)
+                elif param == "characterGradient":
+                    if value not in flags[param]["range"]:
+                        sys.stderr.write(f"Error: {param} must be in {flags[param]['range']}\n")
+                        sys.exit(1)
+    
+    # Si ce n'est pas characterOnly, traiter tous les autres paramètres
+    if not characterOnly:
+        # Background
+        value = getattr(args, "background", "default")
+        bg_name = value if value != 'default' else 'default'
+        bg_path = os.path.join('picts', 'backgrounds', f'{bg_name}.png')
+        if not os.path.isfile(bg_path):
+            sys.stderr.write(f"Error: Background file not found: {bg_path}\n")
+            sys.exit(1)
+        globals["render"]["background"] = bg_path
+        
+        # Misc
+        value = getattr(args, "misc", "none")
+        misc_name = value if value != 'none' else 'none'
+        misc_path = os.path.join('picts', 'miscs', f'{misc_name}.png')
+        if not os.path.isfile(misc_path):
+            sys.stderr.write(f"Error: Misc file not found: {misc_path}\n")
+            sys.exit(1)
+        globals["render"]["misc"] = misc_path
+        
+        # Autres paramètres de positionnement, échelle, etc.
+        for param in ["characterXpos", "characterYpos", "characterScale", 
+                    "characterRotation", "characterGlow", "miscPosX", 
+                    "miscPosY", "miscScale", "miscRotate", "crt"]:
+            value = getattr(args, param, None)
+            if value is not None:
+                globals["render"]["val"][param] = value
+                
+                # Validation des ranges si applicable
+                if param in flags and flags[param]["range"] is not None:
+                    if ((value not in flags[param]["range"]) and 
+                        (value not in range(flags[param]["range"][0], flags[param]["range"][1] + 1))):
+                        sys.stderr.write(f"Error: {param} must be in {flags[param]['range']}\n")
+                        sys.exit(1)
+    
     if globals["render"].get("characterOnly", False):
         output_path = globals["render"].get("output", "character_output.png")
         export_character_only(output_path)
     else:
-        # Vérification des autres fichiers uniquement si on n'est pas en mode characterOnly
         if not os.path.isfile(globals["render"]["background"]):
             sys.stderr.write(f"Error: Background file not found: {globals['render']['background']}\n")
             sys.exit(1)
-            
+        
         if globals["render"]["misc"] != "none" and not os.path.isfile(globals["render"]["misc"]):
             sys.stderr.write(f"Error: Misc file not found: {globals['render']['misc']}\n")
             sys.exit(1)
-            
+        
         outputPicture(True)

@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 import { existsSync, promises as fs } from 'fs';
-import path, { join, dirname, extname } from 'path';
+import path, { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import type { PathLike } from 'fs';
 import { DependencyChecker } from './utils/dependency-checker';
@@ -64,18 +64,26 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
 
         const rootPath = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-        // Validate paths and files
-        const bgPath = typeof flags.background === 'string' && !flags.background.includes(path.sep)
-            ? join(rootPath, 'picts', 'backgrounds', `${flags.background}.png`)
-            : flags.background || join(rootPath, 'picts', 'backgrounds', 'default.png');
+        // Validate paths and files - modifié pour supprimer .png si présent
+        const cleanBackgroundName = typeof flags.background === 'string' 
+            ? flags.background.replace(/\.png$/, '')
+            : 'default';
+            
+        const cleanMiscName = typeof flags.misc === 'string'
+            ? flags.misc.replace(/\.png$/, '')
+            : 'none';
 
-        const miscPath = typeof flags.misc === 'string' && !flags.misc.includes(path.sep)
-            ? join(rootPath, 'picts', 'miscs', `${flags.misc}.png`)
-            : flags.misc || join(rootPath, 'picts', 'miscs', 'none.png');
+        const bgPath = cleanBackgroundName.includes(path.sep)
+            ? flags.background as string
+            : join(rootPath, 'picts', 'backgrounds', `${cleanBackgroundName}.png`);
+
+        const miscPath = cleanMiscName.includes(path.sep)
+            ? flags.misc as string
+            : join(rootPath, 'picts', 'miscs', `${cleanMiscName}.png`);
 
         const pyScript = join(rootPath, 'vaporwaver.py');
 
-        // Validate required files - if characterOnly is true, we only need to validate character path
+        // Si on est en mode characterOnly, on valide seulement le chemin du personnage
         const requiredFiles: Array<{ path: PathLike, name: string }> = [
             { path: flags.characterPath, name: 'Character' },
             { path: pyScript, name: 'Python script' }
@@ -84,7 +92,7 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         // Only validate background and misc if we're not in characterOnly mode
         if (!flags.characterOnly) {
             requiredFiles.push({ path: bgPath, name: 'Background' });
-            if (miscPath && flags.misc !== 'none') {
+            if (miscPath && cleanMiscName !== 'none') {
                 requiredFiles.push({ path: miscPath, name: 'Misc' });
             }
         }
@@ -97,71 +105,35 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
                 throw new VaporwaverError(`Invalid PNG file: ${file.path}`);
             }
         }
-
-        // Validate output path
-        if (flags.outputPath) {
-            const outputExt = extname(flags.outputPath.toString()).toLowerCase();
-            if (outputExt !== '.png') {
-                throw new VaporwaverError('Output file must be a PNG file');
-            }
-            if (flags.outputPath.toString().includes('..') || flags.outputPath.toString().includes('&')) {
-                throw new VaporwaverError('Invalid output path');
-            }
-        }
-
-        // Validate numeric parameters
-        const validations = [
-            { value: flags.miscPosX, min: -100, max: 100, name: "Misc X position" },
-            { value: flags.miscPosY, min: -100, max: 100, name: "Misc Y position" },
-            { value: flags.miscScale, min: 1, max: 200, name: "Misc scale" },
-            { value: flags.miscRotate, min: -360, max: 360, name: "Misc rotation" },
-            { value: flags.characterXPos, min: -100, max: 100, name: "Character X position" },
-            { value: flags.characterYPos, min: -100, max: 100, name: "Character Y position" },
-            { value: flags.characterScale, min: 1, max: 200, name: "Character scale" },
-            { value: flags.characterRotate, min: -360, max: 360, name: "Character rotation" },
-            { value: flags.characterGlitch, min: 0.1, max: 10, name: "Character glitch" },
-            { value: flags.characterGlitchSeed, min: 0, max: 100, name: "Character glitch seed" }
-        ];
-
-        for (const validation of validations) {
-            if (validation.value !== undefined &&
-                (validation.value < validation.min || validation.value > validation.max)) {
-                throw new VaporwaverError(
-                    `${validation.name} must be between ${validation.min} and ${validation.max}`
-                );
-            }
-        }
-
-        // Validate gradient
-        if (flags.characterGradient &&
-            !validGradients.includes(flags.characterGradient.toLowerCase() as GradientType)) {
-            throw new VaporwaverError(
-                `Invalid gradient type. Must be one of: ${validGradients.join(', ')}`
-            );
-        }
-
-        // Prepare Python arguments
-        const pyArgs = [
-            pyScript,
+        
+        const pyArgs = [pyScript];
+        
+        // Arguments communs toujours requis
+        pyArgs.push(
             `-c=${flags.characterPath}`,
-            `-cx=${flags.characterXPos ?? 0}`,
-            `-cy=${flags.characterYPos ?? 0}`,
-            `-cs=${flags.characterScale ?? 100}`,
-            `-cr=${flags.characterRotate ?? 0}`,
-            `-cg=${flags.characterGlitch ?? 0.1}`,
-            `-cgs=${flags.characterGlitchSeed ?? 0}`,
-            `-cgd=${flags.characterGradient?.toLowerCase() ?? 'none'}`,
             `-o=${flags.outputPath ?? join(rootPath, 'tmp', 'output.png')}`
-        ];
-
-        // Add the character-only flag if specified
+        );
+        
         if (flags.characterOnly) {
-            pyArgs.push('--character-only');
-        } else {
-            // Only add these arguments if we're not in characterOnly mode
+            // En mode characterOnly, ne passer que les paramètres nécessaires
             pyArgs.push(
-                `-b=${typeof flags.background === 'string' ? flags.background : 'default'}`,
-                `-m=${typeof flags.misc === 'string' ? flags.misc : 'none'}`,
+                `--character-only`,
+                `-cgd=${flags.characterGradient?.toLowerCase() ?? 'none'}`,
+                `-cg=${flags.characterGlitch ?? 0.1}`,
+                `-cgs=${flags.characterGlitchSeed ?? 0}`
+            );
+        } else {
+            // En mode normal, passer tous les paramètres
+            pyArgs.push(
+                `-b=${cleanBackgroundName}`,
+                `-m=${cleanMiscName}`,
+                `-cx=${flags.characterXPos ?? 0}`,
+                `-cy=${flags.characterYPos ?? 0}`,
+                `-cs=${flags.characterScale ?? 100}`,
+                `-cr=${flags.characterRotate ?? 0}`,
+                `-cg=${flags.characterGlitch ?? 0.1}`,
+                `-cgs=${flags.characterGlitchSeed ?? 0}`,
+                `-cgd=${flags.characterGradient?.toLowerCase() ?? 'none'}`,
                 `-mx=${flags.miscPosX ?? 0}`,
                 `-my=${flags.miscPosY ?? 0}`,
                 `-ms=${flags.miscScale ?? 100}`,
