@@ -124,6 +124,10 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
             );
         } else {
             // En mode normal, passer tous les paramètres
+            if (flags.crt === true) {
+                pyArgs.push("-crt");
+            }
+            
             pyArgs.push(
                 `-b=${cleanBackgroundName}`,
                 `-m=${cleanMiscName}`,
@@ -137,8 +141,7 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
                 `-mx=${flags.miscPosX ?? 0}`,
                 `-my=${flags.miscPosY ?? 0}`,
                 `-ms=${flags.miscScale ?? 100}`,
-                `-mr=${flags.miscRotate ?? 0}`,
-                `-crt=${flags.crt ?? false}`
+                `-mr=${flags.miscRotate ?? 0}`
             );
         }
 
