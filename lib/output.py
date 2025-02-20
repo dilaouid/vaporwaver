@@ -1,5 +1,4 @@
-import os, errno, sys
-from tkinter import filedialog
+import os
 from data import globals, path_finder, get_temp_file
 from PIL import Image
 
@@ -9,21 +8,37 @@ def outputPicture(cli: bool = False) -> None:
     temp_files = []
     try:
         background = Image.open(path_finder(globals["render"]["background"]))
+        # Ensure background is in RGBA mode
+        if background.mode != 'RGBA':
+            background = background.convert('RGBA')
         
         if globals["render"]["misc"] != path_finder("picts/miscs/none.png"):
             misc = Image.open(path_finder(globals["render"]["misc"]))
+            # Ensure misc is in RGBA mode
+            if misc.mode != 'RGBA':
+                misc = misc.convert('RGBA')
+                
             misc = misc.resize((
                 int(misc.size[0] * int(globals["render"]["val"]["miscScale"]) / 100),
                 int(misc.size[1] * int(globals["render"]["val"]["miscScale"]) / 100)
             ), Image.Resampling.LANCZOS)
             misc = misc.rotate(int(globals["render"]["val"]["miscRotate"]), expand=True)
+            
+            # Get alpha channel safely
+            alpha_mask = None
+            if misc.mode == 'RGBA':
+                # Use alpha channel if available
+                alpha_mask = misc.split()[3]
+            
+            # Calculate center position for misc (centered anchor point)
+            misc_x = int(background.size[0] * int(globals["render"]["val"]["miscPosX"]) / 100) - int(misc.size[0] / 2)
+            misc_y = int(background.size[1] * int(globals["render"]["val"]["miscPosY"]) / 100) - int(misc.size[1] / 2)
+            
+            # Safer paste operation with centered misc
             background.paste(
                 misc,
-                (
-                    int(background.size[0] * int(globals["render"]["val"]["miscPosX"]) / 100),
-                    int(background.size[1] * int(globals["render"]["val"]["miscPosY"]) / 100)
-                ),
-                misc
+                (misc_x, misc_y),
+                alpha_mask
             )
         
         if not cli:
@@ -37,13 +52,20 @@ def outputPicture(cli: bool = False) -> None:
                     int(character.size[1] * int(globals["render"]["val"]["characterScale"]) / 100)
                 ), Image.Resampling.LANCZOS)
                 character = character.rotate(int(globals["render"]["val"]["characterRotation"]), expand=True)
+            
+            # Ensure character is in RGBA mode and get alpha safely
+            if character.mode != 'RGBA':
+                character = character.convert('RGBA')
+            
+            alpha_mask = character.split()[3]
+            
             background.paste(
                 character,
                 (
                     int(background.size[0] * int(globals["render"]["val"]["characterXpos"]) / 100) - int(character.size[0] / 2),
                     int(background.size[1] * int(globals["render"]["val"]["characterYpos"]) / 100) - int(character.size[1] / 2)
                 ),
-                character.split()[-1]  # utiliser explicitement le masque alpha
+                alpha_mask
             )
             # Dans le mode GUI, le chemin est choisi via filedialog
             from tkinter import filedialog
@@ -56,7 +78,6 @@ def outputPicture(cli: bool = False) -> None:
             # Si l'utilisateur annule la sauvegarde, sortir de la fonction
             if not path_save:
                 return
-            # CORRECTION ICI: Utiliser path_save comme chemin de sauvegarde
             globals["render"]["output"] = path_save
         else:
             if globals["render"]["val"]["characterGradient"] != "none":
@@ -74,21 +95,28 @@ def outputPicture(cli: bool = False) -> None:
             
             working_character = glitchingCLI(working_character)
             
-            # S'assurer que l'image est en RGBA et utiliser son canal alpha comme masque
+            # Ensure image is in RGBA mode and get alpha safely
             if working_character.mode != 'RGBA':
                 working_character = working_character.convert('RGBA')
+            
+            alpha_mask = working_character.split()[3]
+            
             background.paste(
                 working_character,
                 (
                     int(background.size[0] * int(globals["render"]["val"]["characterXpos"]) / 100) - int(working_character.size[0] / 2),
                     int(background.size[1] * int(globals["render"]["val"]["characterYpos"]) / 100) - int(working_character.size[1] / 2)
                 ),
-                working_character.split()[-1]
+                alpha_mask
             )
 
         if globals["render"]["val"]["crt"]:
             crt = Image.open(path_finder("picts/crt/crt.png"))
-            background.paste(crt, (0, 0), crt)
+            # Ensure CRT overlay is in RGBA
+            if crt.mode != 'RGBA':
+                crt = crt.convert('RGBA')
+            alpha_mask = crt.split()[3]
+            background.paste(crt, (0, 0), alpha_mask)
         
         # Vérifier que le chemin de sortie a une extension valide
         if not globals["render"]["output"] or not os.path.splitext(globals["render"]["output"])[1]:
