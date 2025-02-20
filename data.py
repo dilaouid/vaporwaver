@@ -30,6 +30,8 @@ def get_all_backgrounds() -> list:
     for file in os.listdir(path):
         if file.endswith(".png") and Image.open(path + file).size == (460, 595):
             backgrounds.append(file[:-4])
+        else:
+            print(f"Background '{file}' is not 460x595, skipping.")
     return backgrounds
 
 globals = {
