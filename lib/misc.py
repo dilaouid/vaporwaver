@@ -6,15 +6,32 @@ def changeMisc(filename: str) -> None:
     globals["render"]["misc"] = path_finder('picts/miscs/' + filename + '.png')
     misc: Image = tk.PhotoImage(file=globals["render"]["misc"])
     gui["frame"]["canvas"].misc = misc
-    gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=misc)
+    
+    # Get canvas dimensions for centering
+    canvas_width = gui["frame"]["canvas"].winfo_width()
+    canvas_height = gui["frame"]["canvas"].winfo_height()
+    
+    # Set position to center (50%)
+    globals["render"]["val"]["miscScale"] = 100
+    globals["render"]["val"]["miscPosX"] = 50
+    globals["render"]["val"]["miscPosY"] = 50
+    
+    # Center the misc image on the canvas
+    x = canvas_width * 0.5  # 50%
+    y = canvas_height * 0.5  # 50%
+    gui["frame"]["canvas"].coords(globals["misc_container"], x, y)
+    
+    # Update the image and ensure it's centered
+    gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=misc, anchor="center")
+    
+    # Update sliders
     for element in gui["el"]["misc"]:
         if element == "scale":
             gui["el"]["misc"][element].set(100)
+        elif element == "miscPosX" or element == "miscPosY":
+            gui["el"]["misc"][element].set(50)  # Center position (50%)
         elif element != "select":
             gui["el"]["misc"][element].set(0)
-    globals["render"]["val"]["miscScale"] = 100
-    globals["render"]["val"]["miscPosX"] = 0
-    globals["render"]["val"]["miscPosY"] = 0
 
 def moveMisc(axis, value) -> None:
     if globals["misc_container"] is None:
