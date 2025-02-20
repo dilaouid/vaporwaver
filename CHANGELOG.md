@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.1.81] - 2025-02-20
+## [1.1.82] - 2025-02-20
 ### Added
 - New feature: `--characterOnly` command now export only the characters from the input image
 - Multiple new miscs and backgrounds added to the library
