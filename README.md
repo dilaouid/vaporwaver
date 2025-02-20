@@ -57,7 +57,7 @@ You can also use this program with the CLI. Fill the correct arguments to create
 Here is the correct usage:
 ```
 usage: vaporwaver.py [-h] [-b background] [-m misc] [-mx miscPosX] [-my miscPosY] [-ms miscScale] [-mr miscRotate] [-c characterPath] [-cx characterXpos] [-cy characterYpos]
-                     [-cs characterScale] [-cr characterRotation] [-cg characterGlitch] [-cgs characterGlitchSeed] [-cgd characterGradient] [-cgl characterGlow] [-crt crt] [-o output]
+                     [-cs characterScale] [-cr characterRotation] [-cg characterGlitch] [-cgs characterGlitchSeed] [-cgd characterGradient] [-cgl characterGlow] [-crt crt] [--characterOnly] [-o output]
 
 Vaporwave image editor
 
@@ -79,6 +79,7 @@ optional arguments:
   -cgd                  Character gradient to apply, cvt colormap name (default: none) [none, autumn, bone, jet, winter, rainbow, ocean, summer, spring, cool, hsv, pink, hot, parula, magma, inferno, plasma, viridis, cividis, deepgreen]
   -cgl                  Character glow to apply (default: none) [none, red, green, blue, yellow]
   -crt                  CRT effect (default: False)
+  --characterOnly       Export only the character with applied effects (no background/misc)
   -o                    Output file name with path (default: output.png) PNG format only
 ```
 
