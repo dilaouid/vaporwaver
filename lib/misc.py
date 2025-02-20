@@ -20,7 +20,12 @@ def moveMisc(axis, value) -> None:
     if globals["misc_container"] is None:
         return
     globals["render"]["val"][axis] = value
-    gui["frame"]["canvas"].coords(globals["misc_container"], gui["frame"]["canvas"].winfo_width() * int(globals["render"]["val"]["miscPosX"]) / 100, gui["frame"]["canvas"].winfo_height() * int(globals["render"]["val"]["miscPosY"]) / 100)
+    canvas_width = gui["frame"]["canvas"].winfo_width()
+    canvas_height = gui["frame"]["canvas"].winfo_height()
+    x = canvas_width * int(globals["render"]["val"]["miscPosX"]) / 100
+    y = canvas_height * int(globals["render"]["val"]["miscPosY"]) / 100
+    gui["frame"]["canvas"].coords(globals["misc_container"], x, y)
+    gui["frame"]["canvas"].itemconfig(globals["misc_container"], anchor="center")
 
 def scaleMisc(axis, value) -> None:
     if globals["misc_container"] is None:
@@ -30,7 +35,7 @@ def scaleMisc(axis, value) -> None:
     image = image.resize((int(image.size[0] * int(globals["render"]["val"]["miscScale"]) / 100), int(image.size[1] * int(globals["render"]["val"]["miscScale"]) / 100)), Image.Resampling.LANCZOS)
     image = image.rotate(int(globals["render"]["val"]["miscRotate"]), expand=True)
     globals["gcMisc"] = ImageTk.PhotoImage(image)
-    gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=globals["gcMisc"])
+    gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=globals["gcMisc"], anchor="center")
 
 def rotateMisc(axis, value) -> None:
     if globals["misc_container"] is None:
