@@ -1,8 +1,10 @@
+# cli.py
 import sys, os
 from data import globals, get_temp_file
 import argparse
 from PIL import Image
 
+from lib.image_handler import load_and_convert_image
 from lib.output import outputPicture
 from lib.character import prepareGradientImage, applyGlitchEffect
 
@@ -91,16 +93,21 @@ infos = {
         "description": "Export only the character with its effects (gradient, glitch) without background and misc items",
         "flag": "--character-only"
     },
+    "miscAboveCharacter": {
+        "description": "Render misc above character (default: False)",
+        "flag": "--misc-above",
+        "range": None
+    }
 }
 
 flags = {
     c: {
         "value": globals["render"][c] if c in globals["render"] else (
-            False if c == "characterOnly" else 
+            False if c in ["crt", "characterOnly", "miscAboveCharacter"] else 
             globals["render"]["val"][c] if c in globals["render"]["val"] else None
         ),
         "type": (
-            "bool" if c in ["crt", "characterOnly"] else  # Type bool pour crt et characterOnly
+            "bool" if c in ["crt", "characterOnly", "miscAboveCharacter"] else    # Type bool pour crt et characterOnly et miscAboveCharacter
             "str" if c == "characterPath" else (  # Forcer str pour characterPath
             type(globals["render"][c]).__name__ if c in globals["render"] else 
             type(globals["render"]["val"][c]).__name__ if c in globals["render"]["val"] and globals["render"]["val"][c] is not None else
@@ -168,7 +175,14 @@ def apply_args():
     if value is None:
         sys.stderr.write("Error: characterPath is required\n")
         sys.exit(1)
-    globals["render"]["val"]["characterPath"] = value
+
+    try:
+        load_and_convert_image(value)
+        globals["render"]["val"]["characterPath"] = value
+    except (ValueError, FileNotFoundError) as e:
+        sys.stderr.write(f"Error: {str(e)}\n")
+        sys.exit(1)
+
     if not os.path.isfile(value):
         sys.stderr.write(f"Error: Character file not found: {value}\n")
         sys.exit(1)
@@ -218,6 +232,8 @@ def apply_args():
             sys.stderr.write(f"Error: Misc file not found: {misc_path}\n")
             sys.exit(1)
         globals["render"]["misc"] = misc_path
+        misc_above = getattr(args, "miscAboveCharacter", False)
+        globals["misc_above_character"] = misc_above
         
         # Autres paramètres de positionnement, échelle, etc.
         for param in ["characterXpos", "characterYpos", "characterScale", 

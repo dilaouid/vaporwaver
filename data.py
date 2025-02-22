@@ -1,3 +1,4 @@
+# data.py
 import sys
 import os
 import tkinter.messagebox
@@ -38,6 +39,7 @@ globals = {
     "character": None,
     "gcChar": None,
     "gcMisc": None,
+    "misc_above_character": False,
     "render": {
         "background": define("default", "backgrounds"),
         "misc": define("none", "miscs"),

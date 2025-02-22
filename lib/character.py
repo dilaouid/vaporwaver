@@ -1,9 +1,58 @@
+# character.py
 import os
 from data import globals, gui, get_temp_file
 from PIL import Image, ImageTk, ImageFilter
 from glitch_this import ImageGlitcher
 import cv2
 import numpy as np
+
+def get_centered_position(container_width: int, container_height: int, x_percent: int, y_percent: int) -> tuple:
+    """
+    Calculate centered position for an element
+    
+    Args:
+        container_width: Width of container (canvas/background)
+        container_height: Height of container (canvas/background)
+        x_percent: X position percentage (-150 to 150)
+        y_percent: Y position percentage (-150 to 150)
+    
+    Returns:
+        tuple: (x, y) coordinates for centered position
+    """
+    # Calculate center of container
+    container_center_x = container_width / 2
+    container_center_y = container_height / 2
+    
+    # Calculate offset from center based on percentage
+    offset_x = container_width * x_percent / 100
+    offset_y = container_height * y_percent / 100
+    
+    # Return position relative to center
+    return (container_center_x + offset_x, container_center_y + offset_y)
+
+def moveCharacter(axis, value) -> None:
+    if globals["character"] is None:
+        return
+        
+    globals["render"]["val"][axis] = value
+    
+    # Always ensure center anchoring
+    gui["frame"]["canvas"].itemconfigure(globals["character"], anchor="center")
+    
+    # Get canvas dimensions
+    canvas_width = gui["frame"]["canvas"].winfo_width()
+    canvas_height = gui["frame"]["canvas"].winfo_height()
+    
+    # Get centered position
+    x, y = get_centered_position(
+        canvas_width,
+        canvas_height,
+        int(globals["render"]["val"]["characterXpos"]),
+        int(globals["render"]["val"]["characterYpos"])
+    )
+    
+    # Update position
+    gui["frame"]["canvas"].coords(globals["character"], x, y)
 
 def resizeCharacter(image):
     # Assurer que l'image est en mode RGBA
@@ -191,14 +240,6 @@ def gradientCharacter(gradient: str):
 def resizeAndUpdate() -> Image:
     # Cette fonction est maintenant remplacée par le pipeline complet
     return applyAllTransformations()
-
-def moveCharacter(axis, value) -> None:
-    if globals["character"] is None:
-        return
-    globals["render"]["val"][axis] = value
-    gui["frame"]["canvas"].coords(globals["character"], 
-                                  gui["frame"]["canvas"].winfo_width() * int(globals["render"]["val"]["characterXpos"]) / 100, 
-                                  gui["frame"]["canvas"].winfo_height() * int(globals["render"]["val"]["characterYpos"]) / 100)
 
 def scaleCharacter(axis, value) -> None:
     if globals["character"] is None:

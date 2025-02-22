@@ -1,3 +1,4 @@
+// vaporwaver.ts
 import { spawn } from 'child_process';
 import { existsSync, promises as fs } from 'fs';
 import path, { join, dirname } from 'path';
@@ -32,6 +33,7 @@ export interface IFlag {
     crt?: boolean;
     outputPath?: PathLike;
     characterOnly?: boolean;
+    miscAboveCharacter?: boolean;
 }
 
 export class VaporwaverError extends Error {
@@ -126,6 +128,10 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
             // En mode normal, passer tous les paramètres
             if (flags.crt === true) {
                 pyArgs.push("-crt");
+            }
+
+            if (flags.miscAboveCharacter === true) {
+                pyArgs.push("--misc-above");
             }
             
             pyArgs.push(

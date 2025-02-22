@@ -1,19 +1,88 @@
+# editor.py
 import os
 import tkinter as tk
 from tkinter import ttk
 import tkinter.filedialog
 import tkinter.messagebox
 from typing import Union
-from data import globals, gui
+from data import globals, gui, get_temp_file
 from PIL import Image
 from lib.background import changeBackground
 from lib.character import moveCharacter, rotateCharacter, scaleCharacter, glitchCharacter, gradientCharacter, glowCharacter
 from lib.crt import crt
-from lib.misc import changeMisc, moveMisc, scaleMisc, rotateMisc
+from lib.misc import changeMisc, moveMisc, scaleMisc, rotateMisc, toggle_misc_priority
 from lib.output import outputPicture
+from lib.image_handler import load_and_convert_image, save_temp_png
 
 def RBGAImage(path: str) -> Image:
-    return Image.open(path).convert("RGBA")
+    return load_and_convert_image(path)
+
+def import_character() -> None:
+    """
+    Importe une image de caractère dans plusieurs formats supportés et la convertit en PNG.
+    Formats supportés : PNG, JPEG, JPG, BMP, WEBP, TIFF, GIF
+    """
+    filetypes = [
+        ("Image files", "*.png;*.jpg;*.jpeg;*.bmp;*.webp;*.tiff;*.gif"),
+        ("PNG files", "*.png"),
+        ("JPEG files", "*.jpg;*.jpeg"),
+        ("BMP files", "*.bmp"),
+        ("WebP files", "*.webp"),
+        ("TIFF files", "*.tiff"),
+        ("GIF files", "*.gif")
+    ]
+    
+    filepath: str = tkinter.filedialog.askopenfilename(
+        title="Select character image",
+        filetypes=filetypes
+    )
+    
+    if not filepath:
+        return
+        
+    try:
+        # Charger et convertir l'image
+        image = load_and_convert_image(filepath)
+        
+        # Sauvegarder en PNG temporaire pour tkinter
+        temp_char = get_temp_file("char-converted")
+        save_temp_png(image, temp_char)
+        
+        # Mettre à jour le chemin du caractère
+        globals["render"]["characterPath"] = filepath
+        globals["render"]["val"]["characterPath"] = filepath
+        
+        try:
+            # Créer la PhotoImage pour l'affichage
+            globals["gcChar"] = tk.PhotoImage(file=temp_char)
+        except tk.TclError as e:
+            tkinter.messagebox.showerror("Error", f"Failed to load image: {str(e)}")
+            return
+
+        # Nettoyer l'ancien fichier temporaire si nécessaire
+        temp_original = get_temp_file("char")
+        if os.path.exists(temp_original):
+            os.remove(temp_original)
+
+        # Centrer le caractère sur le canvas
+        if globals["character"] is None:
+            globals["character"] = gui["frame"]["canvas"].create_image(
+                (gui["frame"]["canvas"].winfo_width() // 2,
+                 gui["frame"]["canvas"].winfo_height() // 2),
+                image=globals["gcChar"],
+                anchor=tk.CENTER
+            )
+        else:
+            gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
+            
+        gui["frame"]["canvas"].character = globals["gcChar"]
+        
+        activateElements()
+        resetValues()
+        
+    except Exception as e:
+        tkinter.messagebox.showerror("Error", f"Failed to import image: {str(e)}")
+        return
 
 # get the filename of the background
 def getFilename(pict: str) -> str:
@@ -22,13 +91,35 @@ def getFilename(pict: str) -> str:
     return filename
 
 def activateElements() -> None:
-    gui["el"]["warning_label"].destroy()
-    gui["el"]["save_button"].configure(state=tk.NORMAL)
-    for element in gui["el"]["char"]:
-        gui["el"]["char"][element].configure(state=tk.NORMAL)
-    for element in gui["el"]["misc"]:
-        gui["el"]["misc"][element].configure(state=tk.NORMAL)
-    gui["el"]["crt"]["checkbox"].configure(state=tk.NORMAL)
+    """Active tous les éléments de l'interface après l'import d'un character"""
+    try:
+        # Supprimer le message d'avertissement
+        if "warning_label" in gui["el"]:
+            gui["el"]["warning_label"].destroy()
+
+        # Activer le bouton de sauvegarde
+        if "save_button" in gui["el"]:
+            gui["el"]["save_button"].configure(state=tk.NORMAL)
+
+        # Activer les éléments du character
+        for element in gui["el"]["char"]:
+            widget = gui["el"]["char"][element]
+            if isinstance(widget, (tk.Scale, tk.OptionMenu)):
+                widget.configure(state=tk.NORMAL)
+
+        # Activer les éléments du misc
+        misc_widgets = ["posX", "posY", "scale", "rotate", "select", "priority_button"]
+        for element in misc_widgets:
+            if element in gui["el"]["misc"]:
+                widget = gui["el"]["misc"][element]
+                if isinstance(widget, (tk.Scale, tk.OptionMenu, tk.Button)):
+                    widget.configure(state=tk.NORMAL)
+
+        # Activer la checkbox CRT
+        if "crt" in gui["el"] and "checkbox" in gui["el"]["crt"]:
+            gui["el"]["crt"]["checkbox"].configure(state=tk.NORMAL)
+    except Exception as e:
+        tkinter.messagebox.showerror("Error", f"Failed to activate elements: {str(e)}")
 
 def resetValues() -> None:
     for element in globals["render"]["val"]:
@@ -41,41 +132,19 @@ def resetValues() -> None:
         else:
             globals["render"]["val"][element] = .1
     for element in gui["el"]["char"]:
-        if element == "scale":
-            gui["el"]["char"][element].set(100)
-        elif element == "glitch":
-            gui["el"]["char"][element].set(.1)
-        elif element != "gradients" and element != "glow":
-            gui["el"]["char"][element].set(0)
+        if isinstance(gui["el"]["char"][element], tk.Scale):
+            if element == "scale":
+                gui["el"]["char"][element].set(100)
+            elif element == "glitch":
+                gui["el"]["char"][element].set(.1)
+            elif element != "gradients" and element != "glow":
+                gui["el"]["char"][element].set(0)
     for element in gui["el"]["misc"]:
-        if element == "scale":
-            gui["el"]["misc"][element].set(100)
-        elif element != "select":
-            gui["el"]["misc"][element].set(0)
-
-def import_png() -> None:
-    filepath: str = tkinter.filedialog.askopenfilename(title = "Select file" ,filetypes = [("png files","*.png")])
-    if filepath == "":
-        return
-    with open(filepath, "rb") as f:
-        globals["render"]["characterPath"] = filepath
-        try:
-            globals["gcChar"] = tk.PhotoImage(file=globals["render"]["characterPath"])
-        except tk.TclError:
-            # show a window with an error message
-            tkinter.messagebox.showerror("Error", "The selected file is not a valid PNG file.")
-            return
-
-        if os.path.exists("tmp/char.png"):
-            os.remove("tmp/char.png")
-
-        # center the character according to the canvas
-        globals["character"] = gui["frame"]["canvas"].create_image((0, 0), image=globals["gcChar"], anchor=tk.CENTER)
-        gui["frame"]["canvas"].character = globals["gcChar"]
-        gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])
-
-        activateElements()
-        resetValues()
+        if isinstance(gui["el"]["misc"][element], tk.Scale):
+            if element == "scale":
+                gui["el"]["misc"][element].set(100)
+            elif element != "select":
+                gui["el"]["misc"][element].set(0)
 
 def scaleElement(element, _from: Union[int, float], _to: Union[int, float], frame: tk.Frame, labelText: str, row: int, col: int, value: str, func, resolution=1) -> tk.Scale:
     label = tk.Label(frame, text=labelText, bg="#303030", fg="white")
@@ -107,7 +176,7 @@ def leftFrame() -> None:
     s = ttk.Style()
     s.configure("Dark.TButton", bg="red", fg="white", font=("Helvetica", 10), borderwidth=10, borderradius=20)
     s.configure("Save.TButton", bg="red", fg="white", font=("Helvetica", 10), borderwidth=10, borderradius=20)
-    import_button = tk.Button(gui["frame"]["left"], text="Import", command=import_png)
+    import_button = tk.Button(gui["frame"]["left"], text="Import", command=import_character)
     import_button.place(x=50, y=555+60, width=300, height=30)
 
     gui["el"]["save_button"] = tk.Button(gui["frame"]["left"], text="Save", bg="blue", fg="white", state=tk.DISABLED if globals["character"] == None else tk.NORMAL, command=outputPicture)
@@ -176,6 +245,15 @@ def rightFrame() -> None:
     gui["el"]["misc"]["posY"] = scaleElement(gui["el"]["misc"]["posY"], -100, 100, gui["frame"]["right"], "Misc Y Position:", 5, 3, "miscPosY", moveMisc)
     gui["el"]["misc"]["scale"] = scaleElement(gui["el"]["misc"]["scale"], 1, 200, gui["frame"]["right"], "Misc Scale:", 7, 2, "miscScale", scaleMisc)
     gui["el"]["misc"]["rotate"] = scaleElement(gui["el"]["misc"]["rotate"], -360, 360, gui["frame"]["right"], "Misc Rotation:", 7, 3, "miscRotate", rotateMisc)
+
+    # Ajout du bouton pour changer la priorité du misc
+    misc_priority_button = tk.Button(
+        gui["frame"]["right"],
+        text="Toggle Misc Layer",
+        command=toggle_misc_priority
+    )
+    misc_priority_button.grid(row=8, column=1, pady=5)
+    gui["el"]["misc"]["priority_button"] = misc_priority_button
 
     # Separator end of background and misc item edition
     separator_second = tk.Frame(gui["frame"]["right"], bg='white', width=200, height=1)
