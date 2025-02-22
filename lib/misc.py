@@ -1,4 +1,3 @@
-# misc.py
 import os
 
 from data import globals, gui, path_finder
@@ -6,17 +5,16 @@ from PIL import Image, ImageTk
 from gui.error import error_dialog
 import tkinter as tk
 
-def toggle_misc_priority() -> None:
+def toggle_misc_priority(value: bool) -> None:
     """Change la priorité d'affichage du misc (devant/derrière le character)"""
     try:
         if globals["misc_container"] is None or globals["character"] is None:
             return
-        
-        # Inverser l'état
-        globals["misc_above_character"] = not globals["misc_above_character"]
+            
+        globals["misc_above_character"] = value
         
         # Si le misc doit être au-dessus du character
-        if globals["misc_above_character"]:
+        if value:
             gui["frame"]["canvas"].lift(globals["misc_container"])
         else:
             # Sinon, le mettre derrière le character mais devant le background
@@ -25,6 +23,7 @@ def toggle_misc_priority() -> None:
             
     except Exception as e:
         error_dialog("Error", f"Failed to change misc priority: {str(e)}")
+
 
 def changeMisc(filename: str) -> None:
     """Change le misc actuel avec les valeurs préservées ou par défaut"""

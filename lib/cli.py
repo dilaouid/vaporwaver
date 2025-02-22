@@ -1,4 +1,3 @@
-# cli.py
 import sys, os
 from data import globals, get_temp_file
 import argparse

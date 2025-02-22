@@ -1,4 +1,3 @@
-# data.py
 import sys
 import os
 import tkinter.messagebox

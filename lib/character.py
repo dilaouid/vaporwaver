@@ -1,4 +1,3 @@
-# character.py
 import os
 from data import globals, gui, get_temp_file
 from PIL import Image, ImageTk, ImageFilter
@@ -258,28 +257,3 @@ def rotateCharacter(axis: str, value: int) -> None:
         return
     globals["render"]["val"][axis] = int(value)
     applyAllTransformations()
-
-def glowCharacter(color: str) -> None:
-    if globals["character"] is None:
-        return
-
-    # Obtenir l'image avec toutes les transformations appliquées
-    image = applyAllTransformations()
-    
-    if image is not None:
-        # Préserver le canal alpha
-        alpha = image.split()[-1]
-
-        # Appliquer l'effet de contour
-        image_rgb = image.convert('RGB')
-        contoured = image_rgb.filter(ImageFilter.CONTOUR)
-
-        # Restaurer le canal alpha
-        contoured_rgba = contoured.convert('RGBA')
-        contoured_rgba.putalpha(alpha)
-
-        # Mettre à jour l'image
-        temp_char = get_temp_file("char")
-        contoured_rgba.save(temp_char, 'PNG')
-        globals["gcChar"] = ImageTk.PhotoImage(contoured_rgba)
-        gui["frame"]["canvas"].itemconfig(globals["character"], image=globals["gcChar"])

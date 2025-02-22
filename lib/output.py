@@ -1,4 +1,3 @@
-# output.py
 import os
 from data import globals, path_finder, get_temp_file
 from PIL import Image

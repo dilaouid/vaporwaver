@@ -1,4 +1,3 @@
-# editor.py
 import os
 import tkinter as tk
 from tkinter import ttk
@@ -8,7 +7,7 @@ from typing import Union
 from data import globals, gui, get_temp_file
 from PIL import Image
 from lib.background import changeBackground
-from lib.character import moveCharacter, rotateCharacter, scaleCharacter, glitchCharacter, gradientCharacter, glowCharacter
+from lib.character import moveCharacter, rotateCharacter, scaleCharacter, glitchCharacter, gradientCharacter
 from lib.crt import crt
 from lib.misc import changeMisc, moveMisc, scaleMisc, rotateMisc, toggle_misc_priority
 from lib.output import outputPicture
@@ -108,11 +107,11 @@ def activateElements() -> None:
                 widget.configure(state=tk.NORMAL)
 
         # Activer les éléments du misc
-        misc_widgets = ["posX", "posY", "scale", "rotate", "select", "priority_button"]
+        misc_widgets = ["posX", "posY", "scale", "rotate", "select", "priority_checkbox"]
         for element in misc_widgets:
             if element in gui["el"]["misc"]:
                 widget = gui["el"]["misc"][element]
-                if isinstance(widget, (tk.Scale, tk.OptionMenu, tk.Button)):
+                if isinstance(widget, (tk.Scale, tk.OptionMenu, tk.Button, tk.Checkbutton)):
                     widget.configure(state=tk.NORMAL)
 
         # Activer la checkbox CRT
@@ -213,13 +212,6 @@ def rightFrame() -> None:
     gui["el"]["char"]["gradients"] = tk.OptionMenu(gui["frame"]["right"], gradient_var, *globals["gradients"], command=lambda x: gradientCharacter(x))
     gui["el"]["char"]["gradients"].grid(row=3, column=0)
 
-    """ glow_label = tk.Label(gui["frame"]["right"], text="Glow", bg="#303030", fg="white")
-    glow_label.grid(row=2, column=1)
-    glow_var = tk.StringVar(gui["frame"]["right"])
-    glow_var.set("none")
-    gui["el"]["char"]["glow"] = tk.OptionMenu(gui["frame"]["right"], gradient_var, *globals["glow"], command=lambda x: glowCharacter(x))
-    gui["el"]["char"]["glow"].grid(row=3, column=1) """
-
     # Separator end of character edition
     separator = tk.Frame(gui["frame"]["right"], bg='white', width=200, height=1)
     separator.grid(row=4, column=0, columnspan=5, sticky=tk.EW, pady=10, padx=5)
@@ -247,13 +239,23 @@ def rightFrame() -> None:
     gui["el"]["misc"]["rotate"] = scaleElement(gui["el"]["misc"]["rotate"], -360, 360, gui["frame"]["right"], "Misc Rotation:", 7, 3, "miscRotate", rotateMisc)
 
     # Ajout du bouton pour changer la priorité du misc
-    misc_priority_button = tk.Button(
+    misc_layer_var = tk.BooleanVar()
+    gui["el"]["misc"]["priority_checkbox"] = tk.Checkbutton(
         gui["frame"]["right"],
-        text="Toggle Misc Layer",
-        command=toggle_misc_priority
+        text="Misc Above Character",
+        variable=misc_layer_var,
+        bg="#303030",
+        fg="white",
+        selectcolor="#303030",
+        activebackground="#303030",
+        activeforeground="white",
+        highlightbackground="#303030",
+        highlightcolor="#303030",
+        highlightthickness=1,
+        bd=0,
+        command=lambda: toggle_misc_priority(misc_layer_var.get())
     )
-    misc_priority_button.grid(row=8, column=1, pady=5)
-    gui["el"]["misc"]["priority_button"] = misc_priority_button
+    gui["el"]["misc"]["priority_checkbox"].grid(row=8, column=1, pady=5)
 
     # Separator end of background and misc item edition
     separator_second = tk.Frame(gui["frame"]["right"], bg='white', width=200, height=1)

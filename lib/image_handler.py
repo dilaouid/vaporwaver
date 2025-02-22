@@ -1,4 +1,3 @@
-# image_handler.py
 import os
 from PIL import Image
 
