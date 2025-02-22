@@ -34,19 +34,38 @@ def changeMisc(filename: str) -> None:
             return
             
         globals["render"]["misc"] = misc_path
-        misc: Image = tk.PhotoImage(file=globals["render"]["misc"])
-        gui["frame"]["canvas"].misc = misc
         
-        # Get canvas dimensions for centering
-        canvas_width = gui["frame"]["canvas"].winfo_width()
-        canvas_height = gui["frame"]["canvas"].winfo_height()
+        # Charger et préparer l'image
+        image = Image.open(misc_path)
+        if image.mode != 'RGBA':
+            image = image.convert('RGBA')
         
-        # Toujours utiliser 100 comme scale par défaut si c'est un nouveau misc
+        # S'assurer que les valeurs par défaut sont présentes
         if "miscScale" not in globals["render"]["val"]:
             globals["render"]["val"]["miscScale"] = 100
             globals["render"]["val"]["miscPosX"] = 0
             globals["render"]["val"]["miscPosY"] = 0
             globals["render"]["val"]["miscRotate"] = 0
+        
+        # Récupérer les valeurs actuelles
+        scale = int(globals["render"]["val"]["miscScale"])
+        rotate = int(globals["render"]["val"]["miscRotate"])
+        
+        # Appliquer le scale
+        new_width = int(image.size[0] * scale / 100)
+        new_height = int(image.size[1] * scale / 100)
+        if new_width > 0 and new_height > 0:
+            image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        
+        # Appliquer la rotation
+        image = image.rotate(rotate, expand=True)
+        
+        # Convertir en PhotoImage et mettre à jour l'affichage
+        globals["gcMisc"] = ImageTk.PhotoImage(image)
+        
+        # Get canvas dimensions for centering
+        canvas_width = gui["frame"]["canvas"].winfo_width()
+        canvas_height = gui["frame"]["canvas"].winfo_height()
         
         # Position calculations with the current values
         x = float(canvas_width) * float(globals["render"]["val"]["miscPosX"]) / 100.0
@@ -54,10 +73,14 @@ def changeMisc(filename: str) -> None:
         
         # Update the image and ensure it's centered
         gui["frame"]["canvas"].coords(globals["misc_container"], x, y)
-        gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=misc, anchor="center")
+        gui["frame"]["canvas"].itemconfig(
+            globals["misc_container"],
+            image=globals["gcMisc"],
+            anchor="center"
+        )
         
         # Appliquer l'ordre des calques correct
-        if globals["misc_above_character"]:
+        if globals.get("misc_above_character", False):
             gui["frame"]["canvas"].lift(globals["misc_container"])
         else:
             gui["frame"]["canvas"].lift(globals["misc_container"], globals["background_container"])
@@ -101,15 +124,33 @@ def rotateMisc(axis, value) -> None:
     try:
         if globals["misc_container"] is None:
             return
-        globals["render"]["val"]["miscRotate"] = value
+            
+        globals["render"]["val"]["miscRotate"] = int(value)
         image = Image.open(globals["render"]["misc"])
-        image = image.resize((
-            int(image.size[0] * int(globals["render"]["val"]["miscScale"]) / 100),
-            int(image.size[1] * int(globals["render"]["val"]["miscScale"]) / 100)
-        ), Image.Resampling.LANCZOS)
-        image = image.rotate(int(globals["render"]["val"]["miscRotate"]), expand=True)
+        if image.mode != 'RGBA':
+            image = image.convert('RGBA')
+        
+        # Récupérer et convertir les valeurs en nombres
+        scale = int(globals["render"]["val"].get("miscScale", 100))
+        rotate = int(globals["render"]["val"]["miscRotate"])
+        
+        # Redimensionner si nécessaire
+        new_width = int(image.size[0] * scale / 100)
+        new_height = int(image.size[1] * scale / 100)
+        
+        if new_width > 0 and new_height > 0:
+            image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+            
+        # Appliquer la rotation
+        image = image.rotate(rotate, expand=True)
+        
+        # Mettre à jour l'affichage
         globals["gcMisc"] = ImageTk.PhotoImage(image)
-        gui["frame"]["canvas"].itemconfig(globals["misc_container"], image=globals["gcMisc"])
+        gui["frame"]["canvas"].itemconfig(
+            globals["misc_container"],
+            image=globals["gcMisc"],
+            anchor="center"
+        )
+            
     except Exception as e:
         error_dialog("Error", f"Failed to rotate misc: {str(e)}")
-

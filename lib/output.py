@@ -22,7 +22,7 @@ def outputPicture(cli: bool = False) -> None:
             misc_prepared = load_and_convert_image(path_finder(globals["render"]["misc"]))
             
             # S'assurer que miscScale a une valeur valide (par défaut 100)
-            misc_scale = globals["render"]["val"].get("miscScale", 100)
+            misc_scale = int(globals["render"]["val"].get("miscScale", 100))
             
             # Calculer les nouvelles dimensions
             new_width = int(misc_prepared.size[0] * misc_scale / 100)
@@ -33,7 +33,7 @@ def outputPicture(cli: bool = False) -> None:
                 misc_prepared = misc_prepared.resize((new_width, new_height), Image.Resampling.LANCZOS)
             
             # Rotation avec la valeur par défaut 0 si non définie
-            misc_rotate = globals["render"]["val"].get("miscRotate", 0)
+            misc_rotate = int(globals["render"]["val"].get("miscRotate", 0))
             misc_prepared = misc_prepared.rotate(misc_rotate, expand=True)
         
         # Préparer le character selon le mode (GUI ou CLI)
