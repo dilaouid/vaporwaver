@@ -5,7 +5,6 @@ import type { PathLike } from 'fs';
 import { DependencyChecker } from './utils/dependency-checker';
 import { logger } from './utils/logger';
 import { fileURLToPath } from 'url';
-import { mkdir } from 'fs/promises';
 
 export const validGradients = [
     "none", "autumn", "bone", "jet", "winter", "rainbow", "ocean",
@@ -77,9 +76,10 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
 
         const rootPath = process.cwd();
         const packageTmpDir = process.env.VAPORWAVER_TMP || path.join(process.cwd(), 'tmp');
-        await mkdir(packageTmpDir, { recursive: true });
-
-        const pyScript = join(rootPath, 'vaporwaver.py');
+        await fs.mkdir(packageTmpDir, { recursive: true });
+        
+        const packageRoot = path.dirname(require.resolve("vaporwaver-ts/package.json"));
+        const pyScript = join(packageRoot, 'vaporwaver.py');
 
         if (flags.outputPath) {
             const fileName = path.basename(flags.outputPath as string);
