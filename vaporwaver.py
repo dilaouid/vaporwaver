@@ -1,3 +1,5 @@
+# vaporwaver.py
+
 import os, sys, uuid
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,9 +22,9 @@ else:
     leftFrame()
     rightFrame()
     def closeWindow():
-        temp_char = os.path.join("tmp", f"char_{globals['temp_suffix']}.png")
-        if os.path.exists(temp_char):
-            os.remove(temp_char)
+        from lib.output import OutputHandler
+        handler = OutputHandler(cli_mode=False)
+        handler.cleanup()
         globals["window"].destroy()
 
     globals["window"].protocol("WM_DELETE_WINDOW", closeWindow)

@@ -4,12 +4,11 @@ import tkinter.messagebox
 from PIL import Image
 
 def path_finder(relative_path: str) -> str:
-    # return relative_path # keep this line for the build
-    # return os.path.dirname(os.path.realpath(__file__)) + '/' + relative_path
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), relative_path)
 
 def define(file: str, folderName: str) -> str:
-    # get the current path
     path = path_finder("picts/" + folderName + "/" + file + ".png")
     if not os.path.exists(path):
         tkinter.messagebox.showerror("Error", "The " + folderName + " file '" + file + "' does not exist.")
@@ -116,8 +115,7 @@ gui = {
             "rotate": None,
             "glitch": None,
             "glitchSeed": None,
-            "gradients": None,
-            # "glow": None
+            "gradients": None
         },
         "misc": {
             "posX": None,
