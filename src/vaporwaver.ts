@@ -34,6 +34,7 @@ export interface IFlag {
     outputPath?: PathLike;
     characterOnly?: boolean;
     miscAboveCharacter?: boolean;
+    tmpDir?: string; 
 }
 
 export class VaporwaverError extends Error {
@@ -77,7 +78,7 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         const rootPath = getModulePath();
         const pyScript = join(rootPath, 'vaporwaver.py');
 
-        const tmpDir = join(rootPath, 'tmp');
+        const tmpDir = flags.tmpDir || join(rootPath, 'tmp');
         if (!existsSync(tmpDir)) {
             await mkdir(tmpDir, { recursive: true });
         }
@@ -168,7 +169,7 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
                 env: {
                     ...process.env,
                     PYTHONPATH: rootPath,
-                    VAPORWAVER_TMP: join(rootPath, 'tmp')
+                    VAPORWAVER_TMP: tmpDir
                 }
             });    
 
