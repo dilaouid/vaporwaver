@@ -5,6 +5,7 @@ import type { PathLike } from 'fs';
 import { DependencyChecker } from './utils/dependency-checker';
 import { logger } from './utils/logger';
 import { fileURLToPath } from 'url';
+import { mkdir } from 'fs/promises';
 
 export const validGradients = [
     "none", "autumn", "bone", "jet", "winter", "rainbow", "ocean",
@@ -74,16 +75,21 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         await DependencyChecker.checkPython();
         await DependencyChecker.checkPythonDependencies();
 
-        const rootPath = process.cwd();
-        const packageTmpDir = process.env.VAPORWAVER_TMP || path.join(process.cwd(), 'tmp');
-        await fs.mkdir(packageTmpDir, { recursive: true });
+        const rootPath = getModulePath();
+        const pyScript = join(rootPath, 'vaporwaver.py');
+        const packageTmpDir = join(rootPath, 'tmp');
         
-        const packageRoot = path.dirname(require.resolve("vaporwaver-ts/package.json"));
-        const pyScript = join(packageRoot, 'vaporwaver.py');
+        // S'assurer que le dossier existe
+        await mkdir(packageTmpDir, { recursive: true });
 
+        // Utiliser le même dossier tmp pour la sortie
         if (flags.outputPath) {
             const fileName = path.basename(flags.outputPath as string);
             flags.outputPath = join(packageTmpDir, fileName);
+        }
+
+        if (flags.tmpDir) {
+            process.env.VAPORWAVER_TMP = flags.tmpDir;
         }
 
         // Validate paths and files...
