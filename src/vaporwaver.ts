@@ -5,6 +5,7 @@ import type { PathLike } from 'fs';
 import { DependencyChecker } from './utils/dependency-checker';
 import { logger } from './utils/logger';
 import { fileURLToPath } from 'url';
+import { mkdir } from 'fs/promises';
 
 export const validGradients = [
     "none", "autumn", "bone", "jet", "winter", "rainbow", "ocean",
@@ -55,7 +56,7 @@ const isValidPngFile = async (filePath: string): Promise<boolean> => {
     }
 };
 
-const getModulePath = (): string => {
+export const getModulePath = (): string => {
     try {
         // En mode développement (src) ou production (dist)
         const currentFilePath = fileURLToPath(import.meta.url);
@@ -64,8 +65,6 @@ const getModulePath = (): string => {
         return process.cwd();
     }
 };
-
-
 
 export async function vaporwaver(flags: IFlag): Promise<void> {
     logger.info('Starting vaporwaver process', { flags });
@@ -78,6 +77,15 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         const rootPath = getModulePath();
         const pyScript = join(rootPath, 'vaporwaver.py');
 
+        const tmpDir = join(rootPath, 'tmp');
+        if (!existsSync(tmpDir)) {
+            await mkdir(tmpDir, { recursive: true });
+        }
+
+        if (flags.outputPath) {
+            const fileName = path.basename(flags.outputPath as string);
+            flags.outputPath = join(rootPath, 'tmp', fileName);
+        }
 
         // Validate paths and files...
         const cleanBackgroundName = typeof flags.background === 'string'
@@ -159,9 +167,10 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
             const pythonProcess = spawn('python', pyArgs, {
                 env: {
                     ...process.env,
-                    PYTHONPATH: rootPath
+                    PYTHONPATH: rootPath,
+                    VAPORWAVER_TMP: join(rootPath, 'tmp')
                 }
-            });
+            });    
 
             let stderrData = '';
 
