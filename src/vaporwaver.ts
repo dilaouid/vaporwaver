@@ -34,7 +34,7 @@ export interface IFlag {
     outputPath?: PathLike;
     characterOnly?: boolean;
     miscAboveCharacter?: boolean;
-    tmpDir?: string; 
+    tmpDir?: string;
 }
 
 export class VaporwaverError extends Error {
@@ -75,10 +75,11 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         await DependencyChecker.checkPython();
         await DependencyChecker.checkPythonDependencies();
 
-        const rootPath = getModulePath();
-        const pyScript = join(rootPath, 'vaporwaver.py');
-        const packageTmpDir = join(rootPath, 'tmp');
+        const rootPath = process.cwd();
+        const packageTmpDir = process.env.VAPORWAVER_TMP || path.join(process.cwd(), 'tmp');
         await mkdir(packageTmpDir, { recursive: true });
+
+        const pyScript = join(rootPath, 'vaporwaver.py');
 
         if (flags.outputPath) {
             const fileName = path.basename(flags.outputPath as string);
