@@ -62,7 +62,7 @@ const getModulePath = (): string => {
         return dirname(srcPath); // Remonte d'un niveau depuis src/
     } catch {
         // En mode production (dist)
-        return dirname(require.resolve('vaporwaver-ts'));
+        return dirname(require.resolve('vaporwaver'));
     }
 };
 
