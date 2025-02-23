@@ -77,10 +77,12 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
 
         const rootPath = getModulePath();
         const pyScript = join(rootPath, 'vaporwaver.py');
+        const packageTmpDir = join(rootPath, 'tmp');
+        await mkdir(packageTmpDir, { recursive: true });
 
-        const tmpDir = flags.tmpDir || join(rootPath, 'tmp');
-        if (!existsSync(tmpDir)) {
-            await mkdir(tmpDir, { recursive: true });
+        if (flags.outputPath) {
+            const fileName = path.basename(flags.outputPath as string);
+            flags.outputPath = join(packageTmpDir, fileName);
         }
 
         // Validate paths and files...
@@ -164,8 +166,7 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
                 env: {
                     ...process.env,
                     PYTHONPATH: rootPath,
-                    VAPORWAVER_TMP: tmpDir,
-                    VAPORWAVER_OUTPUT: flags.outputPath as string
+                    VAPORWAVER_TMP: packageTmpDir
                 }
             });
 
