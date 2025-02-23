@@ -57,14 +57,14 @@ const isValidPngFile = async (filePath: string): Promise<boolean> => {
 
 const getModulePath = (): string => {
     try {
-        // En mode développement (src)
-        const srcPath = dirname(fileURLToPath(import.meta.url));
-        return dirname(srcPath); // Remonte d'un niveau depuis src/
+        // En mode développement (src) ou production (dist)
+        const currentFilePath = fileURLToPath(import.meta.url);
+        return dirname(dirname(currentFilePath));
     } catch {
-        // En mode production (dist)
-        return dirname(require.resolve('vaporwaver'));
+        return process.cwd();
     }
 };
+
 
 
 export async function vaporwaver(flags: IFlag): Promise<void> {
