@@ -1,8 +1,6 @@
-// vaporwaver.ts
 import { spawn } from 'child_process';
 import { existsSync, promises as fs } from 'fs';
-import path, { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import path, { join } from 'path';
 import type { PathLike } from 'fs';
 import { DependencyChecker } from './utils/dependency-checker';
 import { logger } from './utils/logger';
@@ -64,13 +62,13 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         await DependencyChecker.checkPython();
         await DependencyChecker.checkPythonDependencies();
 
-        const rootPath = join(dirname(fileURLToPath(import.meta.url)), '..');
+        // Utilisez process.cwd() pour que rootPath corresponde à vaporwaver-app
+        const rootPath = process.cwd();
 
-        // Validate paths and files - modifié pour supprimer .png si présent
-        const cleanBackgroundName = typeof flags.background === 'string' 
+        // Validate paths and files...
+        const cleanBackgroundName = typeof flags.background === 'string'
             ? flags.background.replace(/\.png$/, '')
             : 'default';
-            
         const cleanMiscName = typeof flags.misc === 'string'
             ? flags.misc.replace(/\.png$/, '')
             : 'none';
@@ -85,13 +83,10 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
 
         const pyScript = join(rootPath, 'vaporwaver.py');
 
-        // Si on est en mode characterOnly, on valide seulement le chemin du personnage
         const requiredFiles: Array<{ path: PathLike, name: string }> = [
             { path: flags.characterPath, name: 'Character' },
             { path: pyScript, name: 'Python script' }
         ];
-
-        // Only validate background and misc if we're not in characterOnly mode
         if (!flags.characterOnly) {
             requiredFiles.push({ path: bgPath, name: 'Background' });
             if (miscPath && cleanMiscName !== 'none') {
@@ -107,17 +102,15 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
                 throw new VaporwaverError(`Invalid PNG file: ${file.path}`);
             }
         }
-        
+
         const pyArgs = [pyScript];
-        
-        // Arguments communs toujours requis
+
         pyArgs.push(
             `-c=${flags.characterPath}`,
-            `-o=${flags.outputPath ?? join(rootPath, 'tmp', 'output.png')}`
+            `-o=${flags.outputPath}`
         );
-        
+
         if (flags.characterOnly) {
-            // En mode characterOnly, ne passer que les paramètres nécessaires
             pyArgs.push(
                 `--character-only`,
                 `-cgd=${flags.characterGradient?.toLowerCase() ?? 'none'}`,
@@ -125,15 +118,12 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
                 `-cgs=${flags.characterGlitchSeed ?? 0}`
             );
         } else {
-            // En mode normal, passer tous les paramètres
             if (flags.crt === true) {
                 pyArgs.push("-crt");
             }
-
             if (flags.miscAboveCharacter === true) {
                 pyArgs.push("--misc-above");
             }
-            
             pyArgs.push(
                 `-b=${cleanBackgroundName}`,
                 `-m=${cleanMiscName}`,
@@ -153,7 +143,6 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
 
         logger.debug('Executing Python script with args:', { pyArgs });
 
-        // Execute Python script
         return new Promise((resolve, reject) => {
             const pythonProcess = spawn('python', pyArgs, {
                 env: {
