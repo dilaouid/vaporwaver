@@ -141,6 +141,7 @@ def export_character_only(output_path):
 
 def apply_args():
     parser = argparse.ArgumentParser(description="Vaporwave image editor (CLI mode)")
+
     type_mapping = {"int": int, "float": float, "str": str, "bool": lambda x: (str(x).lower() in ['true', '1', 'yes'])}
     for c in flags:
         if flags[c]["type"] == "bool":
@@ -168,10 +169,11 @@ def apply_args():
         sys.exit(1)
     value = getattr(args, "output", None)
     if value is not None:
+        print(f"Setting output path to: {value}")  # debug
+        globals["render"]["output"] = value
         if not value.endswith(".png"):
             sys.stderr.write("Error: The output file must be a png\n")
             sys.exit(1)
-        globals["render"]["output"] = value
     for param in ["characterGlitch", "characterGlitchSeed", "characterGradient"]:
         value = getattr(args, param, None)
         if value is not None:

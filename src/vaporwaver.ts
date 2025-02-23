@@ -83,11 +83,6 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
             await mkdir(tmpDir, { recursive: true });
         }
 
-        if (flags.outputPath) {
-            const fileName = path.basename(flags.outputPath as string);
-            flags.outputPath = join(rootPath, 'tmp', fileName);
-        }
-
         // Validate paths and files...
         const cleanBackgroundName = typeof flags.background === 'string'
             ? flags.background.replace(/\.png$/, '')
@@ -169,9 +164,10 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
                 env: {
                     ...process.env,
                     PYTHONPATH: rootPath,
-                    VAPORWAVER_TMP: tmpDir
+                    VAPORWAVER_TMP: tmpDir,
+                    VAPORWAVER_OUTPUT: flags.outputPath as string
                 }
-            });    
+            });
 
             let stderrData = '';
 
