@@ -1,9 +1,10 @@
 import { spawn } from 'child_process';
 import { existsSync, promises as fs } from 'fs';
-import path, { join } from 'path';
+import path, { dirname, join } from 'path';
 import type { PathLike } from 'fs';
 import { DependencyChecker } from './utils/dependency-checker';
 import { logger } from './utils/logger';
+import { fileURLToPath } from 'url';
 
 export const validGradients = [
     "none", "autumn", "bone", "jet", "winter", "rainbow", "ocean",
@@ -54,6 +55,18 @@ const isValidPngFile = async (filePath: string): Promise<boolean> => {
     }
 };
 
+const getModulePath = (): string => {
+    try {
+        // En mode développement (src)
+        const srcPath = dirname(fileURLToPath(import.meta.url));
+        return dirname(srcPath); // Remonte d'un niveau depuis src/
+    } catch {
+        // En mode production (dist)
+        return dirname(require.resolve('vaporwaver-ts'));
+    }
+};
+
+
 export async function vaporwaver(flags: IFlag): Promise<void> {
     logger.info('Starting vaporwaver process', { flags });
 
@@ -62,8 +75,9 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         await DependencyChecker.checkPython();
         await DependencyChecker.checkPythonDependencies();
 
-        // Utilisez process.cwd() pour que rootPath corresponde à vaporwaver-app
-        const rootPath = process.cwd();
+        const rootPath = getModulePath();
+        const pyScript = join(rootPath, 'vaporwaver.py');
+
 
         // Validate paths and files...
         const cleanBackgroundName = typeof flags.background === 'string'
@@ -80,8 +94,6 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         const miscPath = cleanMiscName.includes(path.sep)
             ? flags.misc as string
             : join(rootPath, 'picts', 'miscs', `${cleanMiscName}.png`);
-
-        const pyScript = join(rootPath, 'vaporwaver.py');
 
         const requiredFiles: Array<{ path: PathLike, name: string }> = [
             { path: flags.characterPath, name: 'Character' },

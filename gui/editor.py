@@ -1,4 +1,3 @@
-# editor.py
 import os
 import tkinter as tk
 import tkinter.filedialog

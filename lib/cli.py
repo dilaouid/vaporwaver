@@ -4,6 +4,7 @@ import argparse
 from PIL import Image
 from lib.image_handler import load_and_convert_image
 from lib.output import outputPicture, OutputHandler
+from lib.paths import get_asset_path
 
 # Générer un suffixe unique pour les fichiers tmp
 globals["temp_suffix"] = uuid.uuid4().hex
@@ -188,14 +189,14 @@ def apply_args():
     if not globals["render"].get("characterOnly", False):
         value = getattr(args, "background", "default")
         bg_name = value if value != "default" else "default"
-        bg_path = os.path.join("picts", "backgrounds", f"{bg_name}.png")
+        bg_path = get_asset_path(os.path.join("picts", "backgrounds", f"{bg_name}.png"))
         if not os.path.isfile(bg_path):
             sys.stderr.write(f"Error: Background file not found: {bg_path}\n")
             sys.exit(1)
         globals["render"]["background"] = bg_path
         value = getattr(args, "misc", "none")
         misc_name = value if value != "none" else "none"
-        misc_path = os.path.join("picts", "miscs", f"{misc_name}.png")
+        misc_path = get_asset_path(os.path.join("picts", "miscs", f"{misc_name}.png"))
         if not os.path.isfile(misc_path):
             sys.stderr.write(f"Error: Misc file not found: {misc_path}\n")
             sys.exit(1)
