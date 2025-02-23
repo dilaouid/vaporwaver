@@ -14,6 +14,9 @@ class OutputHandler:
         self.character_processor = Character(None, None)
         self.misc_processor = Misc(None, None)
         self.image_processor = ImageProcessor()
+        self.tmp_dir = globals["tmp_dir"]
+
+        print(f"OutputHandler initialized with tmp_dir: {self.tmp_dir}")
 
     def prepare_background(self) -> Image.Image:
         """Prépare l'image de fond"""

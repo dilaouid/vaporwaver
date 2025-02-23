@@ -7,13 +7,17 @@ from lib.paths import get_package_root, get_asset_path
 globals["temp_suffix"] = uuid.uuid4().hex
 
 package_root = get_package_root()
-tmp_dir = os.path.join(package_root, 'tmp')  # Un seul dossier tmp à la racine
 
-os.makedirs(tmp_dir, exist_ok=True)  # dossier tmp pour les fichiers temporaires
+def get_tmp_dir():
+    """Get tmp directory from environment variable or default"""
+    return os.environ.get('VAPORWAVER_TMP') or os.path.join(get_package_root(), 'tmp')
+
+globals["tmp_dir"] = get_tmp_dir()
+
+os.makedirs(globals["tmp_dir"], exist_ok=True)  # dossier tmp pour les fichiers temporaires
 os.makedirs(get_asset_path('picts/backgrounds'), exist_ok=True)  # assets
 os.makedirs(get_asset_path('picts/miscs'), exist_ok=True)  # assets
 
-globals["tmp_dir"] = tmp_dir
 
 if len(sys.argv) > 1:
     from lib.cli import apply_args
