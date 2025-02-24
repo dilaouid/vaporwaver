@@ -209,6 +209,14 @@ def outputPicture(cli: bool = False) -> None:
         background = Image.open(path_finder(globals["render"]["background"]))
         if background.mode != 'RGBA':
             background = background.convert('RGBA')
+
+        output_path = globals["render"]["output"]
+        output_dir = os.path.dirname(output_path)
+        
+        # S'assurer que le dossier de sortie existe
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir, exist_ok=True)
+
         bg_width, bg_height = background.size
         
         # Préparer character et misc
@@ -319,10 +327,11 @@ def outputPicture(cli: bool = False) -> None:
         
         # Sauvegarder
         print(f"Saving to {globals['render']['output']}")
-        save_as_png(background, globals["render"]["output"])
+        save_as_png(background, output_path)
         
     except Exception as e:
         print(f"Error in outputPicture: {str(e)}")
+        raise
     finally:
         # Nettoyage des fichiers temporaires
         for temp_file in temp_files:
