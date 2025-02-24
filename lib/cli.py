@@ -158,12 +158,23 @@ def apply_args():
     if value is None:
         sys.stderr.write("Error: characterPath is required\n")
         sys.exit(1)
-    try:
-        load_and_convert_image(value)
-        globals["render"]["val"]["characterPath"] = value
-    except Exception as e:
-        sys.stderr.write(f"Error: {str(e)}\n")
+    
+    # Définir le chemin dans les deux endroits nécessaires
+    globals["render"]["characterPath"] = value
+    globals["render"]["val"]["characterPath"] = value
+
+    # Vérifier que le fichier existe et est lisible
+    if not os.path.isfile(value):
+        sys.stderr.write(f"Error: Character file not found: {value}\n")
         sys.exit(1)
+
+    try:
+        # Vérifier que le fichier est lisible et peut être converti
+        load_and_convert_image(value)
+    except Exception as e:
+        sys.stderr.write(f"Error loading character file: {str(e)}\n")
+        sys.exit(1)
+
     if not os.path.isfile(value):
         sys.stderr.write(f"Error: Character file not found: {value}\n")
         sys.exit(1)
@@ -219,17 +230,17 @@ def apply_args():
         output_path = globals["render"].get("output", "character_output.png")
         export_character_only(output_path)
     else:
-        if not os.path.isfile(globals["render"]["background"]):
-            sys.stderr.write(f"Error: Background file not found: {globals['render']['background']}\n")
-            sys.exit(1)
-        if globals["render"]["misc"] != "none" and not os.path.isfile(globals["render"]["misc"]):
-            sys.stderr.write(f"Error: Misc file not found: {globals['render']['misc']}\n")
-            sys.exit(1)
-        # On utilise OutputHandler en mode CLI pour assembler l'image finale en réutilisant le fichier tmp "char"
-        outputPicture(cli=True)
-        # Nettoyer le fichier temporaire unique
         handler = OutputHandler(cli_mode=True)
-        handler.cleanup()
+        try:
+            # Initialiser le handler avec les chemins
+            handler.prepare_paths()
+            # Assembler l'image finale
+            handler.process_image()
+        except Exception as e:
+            sys.stderr.write(f"Error processing image: {str(e)}\n")
+            sys.exit(1)
+        finally:
+            handler.cleanup()
 
 if __name__ == "__main__":
     apply_args()

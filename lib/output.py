@@ -14,9 +14,98 @@ class OutputHandler:
         self.character_processor = Character(None, None)
         self.misc_processor = Misc(None, None)
         self.image_processor = ImageProcessor()
-        self.tmp_dir = globals["tmp_dir"]
-
+        self.tmp_dir = globals.get("tmp_dir") or os.environ.get('VAPORWAVER_TMP')
+        self._register_cleanup()
+        
+        if not self.tmp_dir:
+            raise ValueError("No temporary directory specified")
+            
         print(f"OutputHandler initialized with tmp_dir: {self.tmp_dir}")
+
+    def _register_cleanup(self):
+        """Enregistre le nettoyage à faire à la fermeture du programme"""
+        import atexit
+        atexit.register(self.cleanup)
+
+    def prepare_paths(self):
+        # Vérifier et préparer tous les chemins nécessaires
+        if not globals["render"].get("characterPath"):
+            raise ValueError("Character path not set in globals")
+            
+        # Vérifier que le fichier character existe
+        char_path = globals["render"]["characterPath"]
+        if not os.path.isfile(char_path):
+            raise ValueError(f"Character file not found: {char_path}")
+            
+        # Vérifier que le dossier temp existe
+        if not os.path.exists(self.tmp_dir):
+            os.makedirs(self.tmp_dir, exist_ok=True)
+
+    def process_image(self):
+        """Process the image with all effects and save it"""
+        try:
+            # Vérifier que tous les chemins nécessaires existent
+            if not globals["render"].get("output"):
+                raise ValueError("No output path specified")
+                
+            # Préparer le background
+            try:
+                background = self.prepare_background()
+            except Exception as e:
+                raise ValueError(f"Failed to prepare background: {str(e)}")
+            
+            # Préparer le character
+            try:
+                character = self.prepare_character()
+            except Exception as e:
+                raise ValueError(f"Failed to prepare character: {str(e)}")
+                
+            # Préparer le misc si nécessaire
+            misc = None
+            if globals["render"]["misc"] != path_finder("picts/miscs/none.png"):
+                try:
+                    misc = self.prepare_misc()
+                except Exception as e:
+                    raise ValueError(f"Failed to prepare misc: {str(e)}")
+            
+            # Assembler l'image dans le bon ordre
+            try:
+                if not globals.get("misc_above_character", False):
+                    if misc:
+                        self.paste_misc(background, misc)
+                    if character:
+                        self.paste_character(background, character)
+                else:
+                    if character:
+                        self.paste_character(background, character)
+                    if misc:
+                        self.paste_misc(background, misc)
+            except Exception as e:
+                raise ValueError(f"Failed to compose image: {str(e)}")
+            
+            # Appliquer l'effet CRT si demandé
+            if globals["render"]["val"].get("crt"):
+                try:
+                    self.apply_crt_effect(background)
+                except Exception as e:
+                    raise ValueError(f"Failed to apply CRT effect: {str(e)}")
+            
+            # Sauvegarder l'image
+            output_path = globals["render"].get("output")
+            output_dir = os.path.dirname(output_path)
+            if output_dir:
+                os.makedirs(output_dir, exist_ok=True)
+                
+            try:
+                background.save(output_path, "PNG")
+                print(f"Image saved successfully to {output_path}")
+            except Exception as e:
+                raise ValueError(f"Failed to save output image: {str(e)}")
+            
+        except Exception as e:
+            print(f"Error processing image: {str(e)}")
+            raise
+
 
     def prepare_background(self) -> Image.Image:
         """Prépare l'image de fond"""
@@ -24,10 +113,45 @@ class OutputHandler:
         return self.image_processor.ensure_rgba(background)
 
     def prepare_character(self) -> Image.Image:
-        """Prépare l'image du personnage selon le mode (CLI/GUI)"""
-        if self.cli_mode:
-            return self._prepare_cli_character()
-        return self._prepare_gui_character()
+        """Prépare l'image du personnage avec une meilleure gestion d'erreur"""
+        char_path = globals["render"].get("characterPath")
+        if not char_path:
+            raise ValueError("Character path not found in globals")
+            
+        if not os.path.isfile(char_path):
+            raise ValueError(f"Character file not found at {char_path}")
+            
+        try:
+            with open(char_path, 'rb') as f:
+                character = Image.open(f)
+                character = self.image_processor.ensure_rgba(character)
+        except Exception as e:
+            raise ValueError(f"Failed to open character image: {str(e)}")
+            
+        # Appliquer les transformations
+        cp = self.character_processor
+        
+        # Scale et rotation
+        character = cp.transform_image(
+            character,
+            int(globals["render"]["val"]["characterScale"]),
+            int(globals["render"]["val"]["characterRotation"])
+        )
+        
+        # Gradient si nécessaire
+        if globals["render"]["val"]["characterGradient"] != "none":
+            character = cp.apply_gradient(character, globals["render"]["val"]["characterGradient"])
+        
+        # Glitch si nécessaire
+        if float(globals["render"]["val"]["characterGlitch"]) != 0.1:
+            character = cp.apply_glitch(
+                character,
+                float(globals["render"]["val"]["characterGlitch"]),
+                int(globals["render"]["val"]["characterGlitchSeed"])
+            )
+            
+        return character
+
 
     def _prepare_gui_character(self) -> Image.Image:
         """
@@ -187,35 +311,65 @@ class OutputHandler:
         return True
 
     def cleanup(self) -> None:
-        """Nettoie les fichiers temporaires utilisés"""
-        # Supprimer le fichier temporaire unique "char"
+        """Nettoie les fichiers temporaires de manière plus agressive"""
+        # D'abord nettoyer les fichiers spécifiques
         temp_char = get_temp_file("char")
-        if os.path.exists(temp_char):
-            try:
-                os.remove(temp_char)
-            except Exception as e:
-                print(f"Warning: Could not remove temporary file {temp_char}: {e}")
+        temp_cli = get_temp_file("char-cli")
+        temp_conv = get_temp_file("char-converted")
+        specific_files = [temp_char, temp_cli, temp_conv] + self.temp_files
         
-        for temp_file in self.temp_files:
+        for temp_file in specific_files:
             try:
                 if os.path.exists(temp_file):
                     os.remove(temp_file)
             except Exception as e:
                 print(f"Warning: Could not remove temporary file {temp_file}: {e}")
 
+        # Ensuite, nettoyer tous les fichiers du dossier tmp qui correspondent au suffixe unique
+        if self.tmp_dir and os.path.exists(self.tmp_dir):
+            suffix = globals.get("temp_suffix", "")
+            if suffix:
+                for file in os.listdir(self.tmp_dir):
+                    if suffix in file:
+                        try:
+                            os.remove(os.path.join(self.tmp_dir, file))
+                        except Exception as e:
+                            print(f"Warning: Could not remove temporary file {file}: {e}")
+
+
 def outputPicture(cli: bool = False) -> None:
     temp_files = []
     try:
+        # Demander le chemin de sauvegarde uniquement une fois au début en mode GUI
+        output_path = None
+        if not cli:
+            from tkinter import filedialog
+            path_save = filedialog.asksaveasfilename(
+                initialdir=os.getcwd(),
+                title="Select file",
+                defaultextension=".png",
+                initialfile="vaporwaved.png"
+            )
+            if not path_save:
+                print("Save cancelled by user")
+                return
+            globals["render"]["output"] = path_save
+            output_path = path_save
+        else:
+            output_path = globals["render"].get("output")
+
+        if not output_path:
+            raise ValueError("No output path specified")
+
+        # Créer le dossier de sortie si nécessaire
+        output_dir = os.path.dirname(output_path)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+
+        # Charger et préparer le background
         background = Image.open(path_finder(globals["render"]["background"]))
         if background.mode != 'RGBA':
             background = background.convert('RGBA')
-
-        output_path = globals["render"]["output"]
-        output_dir = os.path.dirname(output_path)
-        
-        # S'assurer que le dossier de sortie existe
-        if output_dir and not os.path.exists(output_dir):
-            os.makedirs(output_dir, exist_ok=True)
 
         bg_width, bg_height = background.size
         
@@ -241,7 +395,6 @@ def outputPicture(cli: bool = False) -> None:
             else:
                 character = load_and_convert_image(globals["render"]["characterPath"])
                 character_processor = Character(None, None)
-                
                 character = character_processor.transform_image(
                     character,
                     int(globals["render"]["val"]["characterScale"]),
@@ -277,20 +430,6 @@ def outputPicture(cli: bool = False) -> None:
                     float(globals["render"]["val"]["characterGlitch"]),
                     int(globals["render"]["val"]["characterGlitchSeed"])
                 )
-
-
-        # Vérifier que le chemin de sortie est valide
-        if not cli:
-            from tkinter import filedialog
-            path_save = filedialog.asksaveasfilename(
-                initialdir=os.getcwd(),
-                title="Select file",
-                defaultextension=".png",
-                initialfile="vaporwaved.png"
-            )
-            if not path_save:
-                return
-            globals["render"]["output"] = path_save
         
         # Coller les éléments dans le bon ordre selon misc_above_character
         if not globals.get("misc_above_character", False):
@@ -316,7 +455,6 @@ def outputPicture(cli: bool = False) -> None:
                 misc_y = bg_height // 2 + int(bg_height * int(globals["render"]["val"]["miscPosY"]) / 100) - misc.height // 2
                 background.paste(misc, (misc_x, misc_y), alpha_mask)
 
-
         # Effet CRT
         if globals["render"]["val"]["crt"]:
             crt = Image.open(path_finder("picts/crt/crt.png"))
@@ -326,7 +464,7 @@ def outputPicture(cli: bool = False) -> None:
             background.paste(crt, (0, 0), alpha_mask)
         
         # Sauvegarder
-        print(f"Saving to {globals['render']['output']}")
+        print(f"Saving to {output_path}")
         save_as_png(background, output_path)
         
     except Exception as e:

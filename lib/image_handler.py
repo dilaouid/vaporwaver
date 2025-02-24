@@ -62,19 +62,14 @@ def load_and_convert_image(image_path: str) -> Image.Image:
         raise ValueError(f"Erreur lors du chargement de l'image: {str(e)}")
 
 def save_as_png(image: Image.Image, output_path: str) -> None:
-    """
-    Sauvegarde une image au format PNG en préservant la transparence.
-    
-    Args:
-        image (Image.Image): Image à sauvegarder
-        output_path (str): Chemin de sortie
-    """
-    # S'assurer que l'image est en mode RGBA
-    if image.mode != 'RGBA':
-        image = image.convert('RGBA')
-    
-    # Créer le dossier de sortie si nécessaire
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    
-    # Sauvegarder l'image
-    image.save(output_path, 'PNG')
+    """Sauvegarde une image au format PNG"""
+    try:
+        # Créer le dossier parent si nécessaire et si le chemin n'est pas dans le dossier courant
+        output_dir = os.path.dirname(output_path)
+        if output_dir:  # Ne crée le dossier que si output_dir n'est pas vide
+            os.makedirs(output_dir, exist_ok=True)
+        
+        # Sauvegarder l'image
+        image.save(output_path, 'PNG')
+    except Exception as e:
+        raise ValueError(f"Failed to save image to {output_path}: {str(e)}")

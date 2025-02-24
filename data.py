@@ -130,5 +130,17 @@ gui = {
     }
 }
 
+def cleanup_temp_files():
+    """Nettoie tous les fichiers temporaires du dossier tmp"""
+    tmp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tmp')
+    if os.path.exists(tmp_dir):
+        for file in os.listdir(tmp_dir):
+            try:
+                file_path = os.path.join(tmp_dir, file)
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                print(f"Warning: Could not remove temporary file {file_path}: {e}")
+
 def get_temp_file(name: str) -> str:
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tmp', f"{name}_{globals.get('temp_suffix', 'default')}.png")

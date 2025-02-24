@@ -12,6 +12,12 @@ def get_tmp_dir():
     """Get tmp directory from environment variable or default"""
     return os.environ.get('VAPORWAVER_TMP') or os.path.join(get_package_root(), 'tmp')
 
+def on_closing():
+    """À appeler quand la fenêtre GUI se ferme"""
+    from data import cleanup_temp_files
+    cleanup_temp_files()
+    globals["window"].destroy()
+
 globals["tmp_dir"] = get_tmp_dir()
 
 os.makedirs(globals["tmp_dir"], exist_ok=True)  # dossier tmp pour les fichiers temporaires
@@ -31,10 +37,11 @@ else:
     rightFrame()
     
     def closeWindow():
+        from data import cleanup_temp_files
         from lib.output import OutputHandler
-        handler = OutputHandler(cli_mode=False)
-        handler.cleanup()
+        cleanup_temp_files()
         globals["window"].destroy()
 
-    globals["window"].protocol("WM_DELETE_WINDOW", closeWindow)
-    globals["window"].mainloop()
+globals["window"].protocol("WM_DELETE_WINDOW", on_closing)
+globals["window"].protocol("WM_DELETE_WINDOW", closeWindow)
+globals["window"].mainloop()
