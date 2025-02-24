@@ -141,6 +141,7 @@ interface IFlag {
     crt?: boolean;            // Apply CRT effect
     outputPath?: string;      // Output file path (PNG)
     characterOnly?: boolean;  // Export only the character with effects (no background/misc)
+    miscAboveCharacter?: boolean; // the misc image will be above the character instead of behind
 }
 ```
 
