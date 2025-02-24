@@ -154,14 +154,20 @@ def apply_args():
                                 dest=c, metavar=c)
     args = parser.parse_args()
     globals["render"]["characterOnly"] = getattr(args, "characterOnly", False)
+
     value = getattr(args, "characterPath")
     if value is None:
         sys.stderr.write("Error: characterPath is required\n")
         sys.exit(1)
     
-    # Définir le chemin dans les deux endroits nécessaires
-    globals["render"]["characterPath"] = value
-    globals["render"]["val"]["characterPath"] = value
+    char_path = os.path.abspath(value)
+    print(f"Using character path: {char_path}")
+    if not os.path.isfile(char_path):
+        sys.stderr.write(f"Error: Character file not found: {char_path}\n")
+        sys.exit(1)
+
+    globals["render"]["characterPath"] = char_path
+    globals["render"]["val"]["characterPath"] = char_path
 
     # Vérifier que le fichier existe et est lisible
     if not os.path.isfile(value):
@@ -180,11 +186,18 @@ def apply_args():
         sys.exit(1)
     value = getattr(args, "output", None)
     if value is not None:
-        print(f"Setting output path to: {value}")  # debug
-        globals["render"]["output"] = value
-        if not value.endswith(".png"):
+        output_path = os.path.abspath(value)
+        print(f"Using output path: {output_path}")
+        globals["render"]["output"] = output_path
+        if not output_path.endswith(".png"):
             sys.stderr.write("Error: The output file must be a png\n")
             sys.exit(1)
+            
+        # Créer le dossier de sortie si nécessaire
+        output_dir = os.path.dirname(output_path)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
+
     for param in ["characterGlitch", "characterGlitchSeed", "characterGradient"]:
         value = getattr(args, param, None)
         if value is not None:
@@ -230,16 +243,18 @@ def apply_args():
         output_path = globals["render"].get("output", "character_output.png")
         export_character_only(output_path)
     else:
-        handler = OutputHandler(cli_mode=True)
         try:
-            # Initialiser le handler avec les chemins
+            handler = OutputHandler(cli_mode=True)
+            print("Preparing paths...")
             handler.prepare_paths()
-            # Assembler l'image finale
+            print("Processing image...")
             handler.process_image()
+            print("Image processing completed.")
         except Exception as e:
             sys.stderr.write(f"Error processing image: {str(e)}\n")
             sys.exit(1)
         finally:
+            print("Cleaning up temporary files...")
             handler.cleanup()
 
 if __name__ == "__main__":

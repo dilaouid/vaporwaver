@@ -45,60 +45,45 @@ class OutputHandler:
         """Process the image with all effects and save it"""
         try:
             # Vérifier que tous les chemins nécessaires existent
-            if not globals["render"].get("output"):
+            output_path = globals["render"].get("output")
+            if not output_path:
                 raise ValueError("No output path specified")
+            print(f"Will save to: {output_path}")
                 
             # Préparer le background
             try:
                 background = self.prepare_background()
+                print("Background prepared successfully")
             except Exception as e:
                 raise ValueError(f"Failed to prepare background: {str(e)}")
             
             # Préparer le character
             try:
                 character = self.prepare_character()
+                print("Character prepared successfully")
             except Exception as e:
                 raise ValueError(f"Failed to prepare character: {str(e)}")
                 
-            # Préparer le misc si nécessaire
-            misc = None
-            if globals["render"]["misc"] != path_finder("picts/miscs/none.png"):
-                try:
-                    misc = self.prepare_misc()
-                except Exception as e:
-                    raise ValueError(f"Failed to prepare misc: {str(e)}")
-            
             # Assembler l'image dans le bon ordre
             try:
                 if not globals.get("misc_above_character", False):
-                    if misc:
-                        self.paste_misc(background, misc)
-                    if character:
-                        self.paste_character(background, character)
+                    self.paste_character(background, character)
                 else:
-                    if character:
-                        self.paste_character(background, character)
-                    if misc:
-                        self.paste_misc(background, misc)
+                    self.paste_character(background, character)
+                print("Character pasted successfully")
             except Exception as e:
                 raise ValueError(f"Failed to compose image: {str(e)}")
             
-            # Appliquer l'effet CRT si demandé
-            if globals["render"]["val"].get("crt"):
-                try:
-                    self.apply_crt_effect(background)
-                except Exception as e:
-                    raise ValueError(f"Failed to apply CRT effect: {str(e)}")
-            
             # Sauvegarder l'image
-            output_path = globals["render"].get("output")
-            output_dir = os.path.dirname(output_path)
-            if output_dir:
-                os.makedirs(output_dir, exist_ok=True)
-                
             try:
+                output_dir = os.path.dirname(output_path)
+                if output_dir:
+                    os.makedirs(output_dir, exist_ok=True)
+                print(f"Saving output to: {output_path}")
                 background.save(output_path, "PNG")
                 print(f"Image saved successfully to {output_path}")
+                if not os.path.exists(output_path):
+                    raise ValueError(f"Output file was not created at {output_path}")
             except Exception as e:
                 raise ValueError(f"Failed to save output image: {str(e)}")
             
