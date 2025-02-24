@@ -20,15 +20,22 @@ def on_closing():
 
 globals["tmp_dir"] = get_tmp_dir()
 
+# Créer les dossiers nécessaires
 os.makedirs(globals["tmp_dir"], exist_ok=True)  # dossier tmp pour les fichiers temporaires
 os.makedirs(get_asset_path('picts/backgrounds'), exist_ok=True)  # assets
 os.makedirs(get_asset_path('picts/miscs'), exist_ok=True)  # assets
 
-
 if len(sys.argv) > 1:
-    from lib.cli import apply_args
-    apply_args()
+    # Mode CLI
+    try:
+        from lib.cli import apply_args
+        apply_args()
+    finally:
+        # Nettoyage à la fin en mode CLI
+        from data import cleanup_temp_files
+        cleanup_temp_files()
 else:
+    # Mode GUI
     from gui.window import configureWindow
     from gui.editor import leftFrame, rightFrame
     
@@ -42,6 +49,5 @@ else:
         cleanup_temp_files()
         globals["window"].destroy()
 
-globals["window"].protocol("WM_DELETE_WINDOW", on_closing)
-globals["window"].protocol("WM_DELETE_WINDOW", closeWindow)
-globals["window"].mainloop()
+    globals["window"].protocol("WM_DELETE_WINDOW", closeWindow)
+    globals["window"].mainloop()
