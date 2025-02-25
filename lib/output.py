@@ -105,38 +105,49 @@ class OutputHandler:
             
         if not os.path.isfile(char_path):
             raise ValueError(f"Character file not found at {char_path}")
-            
+        
+        print(f"Loading character from: {char_path}")
+        
         try:
+            # Lire complètement les données de l'image et les stocker en mémoire
             with open(char_path, 'rb') as f:
-                character = Image.open(f)
+                image_data = f.read()
+                
+            # Créer l'image à partir des données en mémoire
+            try:
+                from io import BytesIO
+                character = Image.open(BytesIO(image_data))
+                character.load()  # Charger complètement l'image en mémoire
                 character = self.image_processor.ensure_rgba(character)
-        except Exception as e:
-            raise ValueError(f"Failed to open character image: {str(e)}")
+            except Exception as e:
+                raise ValueError(f"Failed to load character image data: {str(e)}")
+                
+            # Appliquer les transformations
+            cp = self.character_processor
             
-        # Appliquer les transformations
-        cp = self.character_processor
-        
-        # Scale et rotation
-        character = cp.transform_image(
-            character,
-            int(globals["render"]["val"]["characterScale"]),
-            int(globals["render"]["val"]["characterRotation"])
-        )
-        
-        # Gradient si nécessaire
-        if globals["render"]["val"]["characterGradient"] != "none":
-            character = cp.apply_gradient(character, globals["render"]["val"]["characterGradient"])
-        
-        # Glitch si nécessaire
-        if float(globals["render"]["val"]["characterGlitch"]) != 0.1:
-            character = cp.apply_glitch(
+            # Scale et rotation
+            character = cp.transform_image(
                 character,
-                float(globals["render"]["val"]["characterGlitch"]),
-                int(globals["render"]["val"]["characterGlitchSeed"])
+                int(globals["render"]["val"]["characterScale"]),
+                int(globals["render"]["val"]["characterRotation"])
             )
             
-        return character
-
+            # Gradient si nécessaire
+            if globals["render"]["val"]["characterGradient"] != "none":
+                character = cp.apply_gradient(character, globals["render"]["val"]["characterGradient"])
+            
+            # Glitch si nécessaire
+            if float(globals["render"]["val"]["characterGlitch"]) != 0.1:
+                character = cp.apply_glitch(
+                    character,
+                    float(globals["render"]["val"]["characterGlitch"]),
+                    int(globals["render"]["val"]["characterGlitchSeed"])
+                )
+                
+            return character
+        except Exception as e:
+            print(f"Error loading character: {str(e)}")
+            raise ValueError(f"Failed to prepare character: {str(e)}")
 
     def _prepare_gui_character(self) -> Image.Image:
         """

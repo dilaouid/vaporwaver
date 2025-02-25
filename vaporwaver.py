@@ -1,6 +1,25 @@
 import os, sys, uuid
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+try:
+    from PIL import ImageFile
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    print("PIL configured to load truncated images")
+except ImportError:
+    print("PIL import error - image loading optimizations not applied")
+
+# Détection du mode debug
+DEBUG = "--debug" in sys.argv
+def debug_log(message):
+    if DEBUG:
+        print(f"DEBUG: {message}")
+
+# Informations sur l'environnement pour le debugging
+debug_log(f"Python version: {sys.version}")
+debug_log(f"Current working directory: {os.getcwd()}")
+debug_log(f"Script directory: {os.path.dirname(os.path.abspath(__file__))}")
+debug_log(f"VAPORWAVER_TMP: {os.environ.get('VAPORWAVER_TMP', 'Not set')}")
+
 from data import globals
 from lib.paths import get_package_root, get_asset_path
 

@@ -82,14 +82,16 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
         // S'assurer que le dossier existe
         await mkdir(packageTmpDir, { recursive: true });
 
-        // Utiliser le même dossier tmp pour la sortie
+        // Si un dossier tmp externe est fourni, l'utiliser en priorité
+        const tmpDir = flags.tmpDir || packageTmpDir;
+        process.env.VAPORWAVER_TMP = tmpDir;
+        
+        logger.debug(`Using temporary directory: ${tmpDir}`);
+
         if (flags.outputPath) {
             const fileName = path.basename(flags.outputPath as string);
-            flags.outputPath = join(packageTmpDir, fileName);
-        }
-
-        if (flags.tmpDir) {
-            process.env.VAPORWAVER_TMP = flags.tmpDir;
+            const outputDir = flags.tmpDir || packageTmpDir;
+            flags.outputPath = join(outputDir, fileName);
         }
 
         // Validate paths and files...
@@ -128,7 +130,7 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
             }
         }
 
-        const pyArgs = [pyScript];
+        const pyArgs = [pyScript, '--debug']; // Ajout du flag debug pour plus d'informations
 
         pyArgs.push(
             `-c=${flags.characterPath}`,
@@ -168,18 +170,27 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
 
         logger.debug('Executing Python script with args:', { pyArgs });
 
+        // Vérifier que le fichier character est toujours accessible juste avant l'exécution
+        try {
+            await fs.access(flags.characterPath, fs.constants.R_OK);
+        } catch (error) {
+            throw new VaporwaverError(`Character file is not accessible before Python execution: ${flags.characterPath}`, { originalError: error });
+        }
+
         return new Promise((resolve, reject) => {
             const pythonProcess = spawn('python', pyArgs, {
                 env: {
                     ...process.env,
                     PYTHONPATH: rootPath,
-                    VAPORWAVER_TMP: packageTmpDir
+                    VAPORWAVER_TMP: tmpDir
                 }
             });
 
             let stderrData = '';
+            let stdoutData = '';
 
             pythonProcess.stdout.on('data', (data: Buffer) => {
+                stdoutData += data.toString();
                 logger.debug('Python stdout:', data.toString());
             });
 
@@ -191,11 +202,18 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
             pythonProcess.on('close', (code) => {
                 if (code === 0) {
                     logger.info('Vaporwaver process completed successfully');
+                    
+                    // Vérifier que le fichier de sortie existe
+                    if (flags.outputPath && !existsSync(flags.outputPath)) {
+                        const warning = `Warning: Output file not found at ${flags.outputPath} after successful execution`;
+                        logger.warn(warning);
+                    }
+                    
                     resolve();
                 } else {
                     const error = new VaporwaverError(
                         `Python process failed with code ${code}`,
-                        { stderr: stderrData }
+                        { stderr: stderrData, stdout: stdoutData }
                     );
                     logger.error('Vaporwaver process failed', error);
                     reject(error);
@@ -205,10 +223,25 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
             pythonProcess.on('error', (err) => {
                 const error = new VaporwaverError(
                     'Failed to start Python process',
-                    { originalError: err }
+                    { originalError: err, stdout: stdoutData, stderr: stderrData }
                 );
                 logger.error('Process start failed', error);
                 reject(error);
+            });
+            
+            // Ajouter un timeout de sécurité
+            const timeout = setTimeout(() => {
+                pythonProcess.kill();
+                const error = new VaporwaverError(
+                    'Python process timed out after 30 seconds',
+                    { stdout: stdoutData, stderr: stderrData }
+                );
+                logger.error('Process timeout', error);
+                reject(error);
+            }, 30000); // 30 secondes
+            
+            pythonProcess.on('close', () => {
+                clearTimeout(timeout);
             });
         });
     } catch (error) {
