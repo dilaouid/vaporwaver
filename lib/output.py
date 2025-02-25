@@ -64,13 +64,37 @@ class OutputHandler:
             except Exception as e:
                 raise ValueError(f"Failed to prepare character: {str(e)}")
                 
+            # Préparer le misc si nécessaire
+            misc = None
+            try:
+                if globals["render"]["misc"] != path_finder("picts/miscs/none.png"):
+                    misc = self.prepare_misc()
+                    print("Misc prepared successfully")
+            except Exception as e:
+                print(f"Warning: Failed to prepare misc: {str(e)}")
+                
             # Assembler l'image dans le bon ordre
             try:
                 if not globals.get("misc_above_character", False):
+                    # Misc en dessous du character
+                    if misc is not None:
+                        self.paste_misc(background, misc)
+                        print("Misc pasted successfully")
                     self.paste_character(background, character)
+                    print("Character pasted successfully")
                 else:
+                    # Misc au-dessus du character
                     self.paste_character(background, character)
-                print("Character pasted successfully")
+                    print("Character pasted successfully")
+                    if misc is not None:
+                        self.paste_misc(background, misc)
+                        print("Misc pasted successfully")
+                
+                # Appliquer l'effet CRT si activé
+                if globals["render"]["val"].get("crt", False):
+                    self.apply_crt_effect(background)
+                    print("CRT effect applied")
+                    
             except Exception as e:
                 raise ValueError(f"Failed to compose image: {str(e)}")
             
@@ -90,6 +114,7 @@ class OutputHandler:
         except Exception as e:
             print(f"Error processing image: {str(e)}")
             raise
+
 
 
     def prepare_background(self) -> Image.Image:
@@ -257,12 +282,16 @@ class OutputHandler:
         x, y = self.image_processor.calculate_center_position(
             background.size,
             (int(globals["render"]["val"]["characterXpos"]),
-             int(globals["render"]["val"]["characterYpos"]))
+            int(globals["render"]["val"]["characterYpos"]))
         )
         
+        # Calculer la position en tenant compte du centre du character
         paste_x = int(x - character.size[0] / 2)
         paste_y = int(y - character.size[1] / 2)
+        
+        print(f"Pasting character at position ({paste_x}, {paste_y}) with size {character.size}")
         background.paste(character, (paste_x, paste_y), alpha_mask)
+
 
     def paste_misc(self, background: Image.Image, misc: Image.Image) -> None:
         """Colle le misc sur le fond"""
@@ -273,21 +302,27 @@ class OutputHandler:
         x, y = self.image_processor.calculate_center_position(
             background.size,
             (int(globals["render"]["val"]["miscPosX"]),
-             int(globals["render"]["val"]["miscPosY"]))
+            int(globals["render"]["val"]["miscPosY"]))
         )
         
+        # Calculer la position en tenant compte du centre du misc
         paste_x = int(x - misc.size[0] / 2)
         paste_y = int(y - misc.size[1] / 2)
+        
+        print(f"Pasting misc at position ({paste_x}, {paste_y}) with size {misc.size}")
         background.paste(misc, (paste_x, paste_y), alpha_mask)
+
 
     def apply_crt_effect(self, background: Image.Image) -> None:
         """Applique l'effet CRT si activé"""
         if not globals["render"]["val"]["crt"]:
             return
-
+        
+        print("Applying CRT effect")
         crt = Image.open(path_finder("picts/crt/crt.png"))
         crt = self.image_processor.ensure_rgba(crt)
         background.paste(crt, (0, 0), crt.split()[3])
+
 
     def handle_gui_save(self) -> bool:
         """Gère la sauvegarde en mode GUI"""
