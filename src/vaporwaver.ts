@@ -130,7 +130,7 @@ export async function vaporwaver(flags: IFlag): Promise<void> {
             }
         }
 
-        const pyArgs = [pyScript, '--debug']; // Ajout du flag debug pour plus d'informations
+        const pyArgs = [pyScript];
 
         pyArgs.push(
             `-c=${flags.characterPath}`,
