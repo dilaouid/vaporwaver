@@ -41,6 +41,59 @@ class OutputHandler:
         if not os.path.exists(self.tmp_dir):
             os.makedirs(self.tmp_dir, exist_ok=True)
 
+    def prepare_character(self) -> Image.Image:
+        """Prépare l'image du personnage avec une meilleure gestion d'erreur"""
+        char_path = globals["render"].get("characterPath")
+        if not char_path:
+            raise ValueError("Character path not found in globals")
+            
+        if not os.path.isfile(char_path):
+            raise ValueError(f"Character file not found at {char_path}")
+        
+        print(f"Loading character from: {char_path}")
+        
+        try:
+            # Lire l'image en mémoire pour éviter le problème de "seek of closed file"
+            with open(char_path, 'rb') as f:
+                image_data = f.read()
+            
+            # Charger l'image à partir des données en mémoire
+            from io import BytesIO
+            character = Image.open(BytesIO(image_data))
+            character.load()  # Charger complètement l'image en mémoire
+            character = self.image_processor.ensure_rgba(character)
+            
+            # Appliquer les transformations
+            cp = self.character_processor
+            
+            # Scale et rotation
+            character = cp.transform_image(
+                character,
+                int(globals["render"]["val"]["characterScale"]),
+                int(globals["render"]["val"]["characterRotation"])
+            )
+            
+            # Gradient si nécessaire
+            if globals["render"]["val"]["characterGradient"] != "none":
+                character = cp.apply_gradient(character, globals["render"]["val"]["characterGradient"])
+            
+            # Glitch si nécessaire
+            if float(globals["render"]["val"]["characterGlitch"]) != 0.1:
+                character = cp.apply_glitch(
+                    character,
+                    float(globals["render"]["val"]["characterGlitch"]),
+                    int(globals["render"]["val"]["characterGlitchSeed"])
+                )
+                
+            return character
+        except Exception as e:
+            # Ajouter des logs détaillés en cas d'erreur
+            print(f"Error preparing character: {type(e).__name__}: {str(e)}")
+            if globals.get("debug", False):
+                import traceback
+                traceback.print_exc()
+            raise ValueError(f"Failed to prepare character: {str(e)}")
+
     def process_image(self):
         """Process the image with all effects and save it"""
         try:
