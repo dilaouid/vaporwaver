@@ -198,13 +198,9 @@ Common issues and solutions:
 1. Python dependency installation fails
     - Try running pip install --user -r requirements.txt
     - Check Python version (>= 3.7.0 required)
-
-
 2. File not found errors
     - Ensure all required files exist in the correct directories
     - Check file permissions
-
-
 3. PNG validation fails
     - Ensure input files are valid PNG format
     - Check file permissions
